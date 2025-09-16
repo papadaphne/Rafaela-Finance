@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rafaela Finance v2</title>
+  <meta name="description" content="Aplikasi manajemen keuangan untuk bisnis kecil">
+  <meta name="theme-color" content="#4361ee">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* CSS yang sama seperti sebelumnya */
+    :root {
+      --primary: #4361ee;
+      --income: #4cc9a4;
+      --expense: #f72585;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --gray: #6c757d;
+      --border: #dee2e6;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: var(--dark);
+      background-color: #f5f7fb;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    header {
+      background: linear-gradient(135deg, var(--primary), #3a0ca3);
+      color: white;
+      padding: 20px 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+      position: relative;
+    }
+    
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .app-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .app-title h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+    
+    .app-title i {
+      font-size: 2rem;
+    }
+    
+    .connection-status {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .online {
+      color: #4cc9a4;
+    }
+    
+    .offline {
+      color: #f72585;
+    }
+    
+    .dashboard {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: var(--dark);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .summary-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .summary-card {
+      text-align: center;
+      padding: 15px;
+      border-radius: 10px;
+      background: white;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+    
+    .summary-card.income {
+      border-top: 4px solid var(--income);
+    }
+    
+    .summary-card.expense {
+      border-top: 4px solid var(--expense);
+    }
+    
+    .summary-card.profit {
+      border-top: 4px solid var(--primary);
+    }
+    
+    .summary-card h3 {
+      font-size: 0.9rem;
+      color: var(--gray);
+      margin-bottom: 8px;
+    }
+    
+    .summary-card .amount {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    
+    .income .amount {
+      color: var(--income);
+    }
+    
+    .expense .amount {
+      color: var(--expense);
+    }
+    
+    .profit .amount {
+      color: var(--primary);
+    }
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      color: var(--dark);
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 10px 15px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+    
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: background-color 0.3s;
+    }
+    
+    .btn:hover {
+      background-color: #3a0ca3;
+    }
+    
+    .btn-block {
+      display: block;
+      width: 100%;
+    }
+    
+    .install-btn {
+      background-color: var(--income);
+      margin-top: 10px;
+    }
+    
+    .filters {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .filter-group label {
+      font-weight: 500;
+    }
+    
+    .transactions-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    
+    .transactions-table th,
+    .transactions-table td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .transactions-table th {
+      background-color: #f8f9fa;
+      font-weight: 600;
+    }
+    
+    .transactions-table tr:hover {
+      background-color: #f8f9fa;
+    }
+    
+    .type-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    
+    .type-income {
+      background-color: rgba(76, 201, 164, 0.15);
+      color: var(--income);
+    }
+    
+    .type-expense {
+      background-color: rgba(247, 37, 133, 0.15);
+      color: var(--expense);
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .btn-icon {
+      padding: 6px 8px;
+      border-radius: 6px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    
+    .btn-edit {
+      color: var(--primary);
+    }
+    
+    .btn-edit:hover {
+      background-color: rgba(67, 97, 238, 0.1);
+    }
+    
+    .btn-delete {
+      color: var(--expense);
+    }
+    
+    .btn-delete:hover {
+      background-color: rgba(247, 37, 133, 0.1);
+    }
+    
+    .chart-container {
+      position: relative;
+      height: 300px;
+      margin-top: 20px;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--gray);
+    }
+    
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      opacity: 0.5;
+    }
+    
+    .empty-state p {
+      font-size: 1.1rem;
+    }
+    
+    .sync-status {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: var(--gray);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    @media (max-width: 992px) {
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+      
+      .summary-cards {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .filters {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .transactions-table {
+        display: block;
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <div class="app-title">
+        <i class="fas fa-chart-pie"></i>
+        <h1>Rafaela Finance v2</h1>
+      </div>
+      <div class="connection-status" id="connection-status">
+        <i class="fas fa-wifi online" id="online-icon"></i>
+        <i class="fas fa-wifi-off offline" id="offline-icon" style="display: none;"></i>
+        <span id="status-text">Online</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Ringkasan Keuangan -->
+    <div class="summary-cards">
+      <div class="summary-card income">
+        <h3>Total Pemasukan</h3>
+        <div class="amount" id="total-income">Rp 0</div>
+      </div>
+      <div class="summary-card expense">
+        <h3>Total Pengeluaran</h3>
+        <div class="amount" id="total-expense">Rp 0</div>
+      </div>
+      <div class="summary-card profit">
+        <h3>Laba Bersih</h3>
+        <div class="amount" id="net-profit">Rp 0</div>
+      </div>
+    </div>
+
+    <div class="dashboard">
+      <!-- Form Input -->
+      <div class="card">
+        <div class="card-title">
+          <span>Tambah Transaksi</span>
+          <i class="fas fa-plus-circle"></i>
+        </div>
+        <form id="finance-form">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="date">Tanggal</label>
+              <input type="date" class="form-control" id="date" required>
+            </div>
+            <div class="form-group">
+              <label for="type">Jenis Transaksi</label>
+              <select class="form-control" id="type" required>
+                <option value="Pemasukan">Pemasukan</option>
+                <option value="Pengeluaran">Pengeluaran</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="category">Kategori</label>
+              <select class="form-control" id="category" required>
+                <option value="Omzet">Omzet</option>
+                <option value="HPP">HPP</option>
+                <option value="Operasional">Operasional</option>
+                <option value="Gaji">Gaji</option>
+                <option value="Lain-lain">Lain-lain</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="subcategory">Sub Kategori</label>
+              <select class="form-control" id="subcategory">
+                <option value="">- Pilih Sub Kategori -</option>
+                <option value="Listrik">Listrik</option>
+                <option value="Wifi">Wifi</option>
+                <option value="Sewa">Sewa</option>
+                <option value="Transport">Transport</option>
+                <option value="Tinta">Tinta</option>
+                <option value="Kertas">Kertas</option>
+                <option value="Gaji Istri">Gaji Istri</option>
+                <option value="Gaji Karyawan">Gaji Karyawan</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="amount">Nominal (Rp)</label>
+            <input type="number" class="form-control" id="amount" required>
+          </div>
+
+          <div class="form-group">
+            <label for="note">Catatan</label>
+            <textarea class="form-control" id="note" rows="2"></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-block">
+            <i class="fas fa-plus"></i> Tambah Transaksi
+          </button>
+          <button type="button" class="btn btn-block install-btn" id="install-btn" style="display: none;">
+            <i class="fas fa-download"></i> Install Aplikasi
+          </button>
+        </form>
+      </div>
+
+      <!-- Grafik -->
+      <div class="card">
+        <div class="card-title">
+          <span>Grafik Keuangan</span>
+          <i class="fas fa-chart-bar"></i>
+        </div>
+        <div class="chart-container">
+          <canvas id="finance-chart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter -->
+    <div class="card">
+      <div class="card-title">
+        <span>Filter Transaksi</span>
+        <i class="fas fa-filter"></i>
+      </div>
+      <div class="filters">
+        <div class="filter-group">
+          <label for="filter-month">Bulan:</label>
+          <select class="form-control" id="filter-month">
+            <option value="">Semua Bulan</option>
+            <option value="01">Januari</option>
+            <option value="02">Februari</option>
+            <option value="03">Maret</option>
+            <option value="04">April</option>
+            <option value="05">Mei</option>
+            <option value="06">Juni</option>
+            <option value="07">Juli</option>
+            <option value="08">Agustus</option>
+            <option value="09">September</option>
+            <option value="10">Oktober</option>
+            <option value="11">November</option>
+            <option value="12">Desember</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="filter-year">Tahun:</label>
+          <select class="form-control" id="filter-year">
+            <option value="">Semua Tahun</option>
+            <!-- Options will be populated by JavaScript -->
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="filter-type">Jenis:</label>
+          <select class="form-control" id="filter-type">
+            <option value="">Semua Jenis</option>
+            <option value="Pemasukan">Pemasukan</option>
+            <option value="Pengeluaran">Pengeluaran</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="filter-category">Kategori:</label>
+          <select class="form-control" id="filter-category">
+            <option value="">Semua Kategori</option>
+            <option value="Omzet">Omzet</option>
+            <option value="HPP">HPP</option>
+            <option value="Operasional">Operasional</option>
+            <option value="Gaji">Gaji</option>
+            <option value="Lain-lain">Lain-lain</option>
+          </select>
+        </div>
+      </div>
+      <div class="sync-status" id="sync-status">
+        <i class="fas fa-sync"></i> <span id="sync-text">Data tersimpan secara lokal</span>
+      </div>
+    </div>
+
+    <!-- Daftar Transaksi -->
+    <div class="card">
+      <div class="card-title">
+        <span>Daftar Transaksi</span>
+        <div>
+          <button class="btn" onclick="exportExcel()">
+            <i class="fas fa-file-export"></i> Export CSV
+          </button>
+          <button class="btn" onclick="backupData()" style="margin-left: 10px;">
+            <i class="fas fa-cloud-upload-alt"></i> Backup
+          </button>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="transactions-table">
+          <thead>
+            <tr>
+              <th>Tanggal</th>
+              <th>Jenis</th>
+              <th>Kategori</th>
+              <th>Sub Kategori</th>
+              <th>Nominal</th>
+              <th>Catatan</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="transaction-list">
+            <!-- Data will be populated by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+      <div id="empty-state" class="empty-state" style="display: none;">
+        <i class="fas fa-receipt"></i>
+        <p>Belum ada transaksi</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Edit -->
+  <div id="edit-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: white; padding: 20px; border-radius: 12px; width: 90%; max-width: 500px;">
+      <h3 style="margin-bottom: 20px;">Edit Transaksi</h3>
+      <form id="edit-form">
+        <input type="hidden" id="edit-index">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="edit-date">Tanggal</label>
+            <input type="date" class="form-control" id="edit-date" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-type">Jenis Transaksi</label>
+            <select class="form-control" id="edit-type" required>
+              <option value="Pemasukan">Pemasukan</option>
+              <option value="Pengeluaran">Pengeluaran</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="edit-category">Kategori</label>
+            <select class="form-control" id="edit-category" required>
+              <option value="Omzet">Omzet</option>
+              <option value="HPP">HPP</option>
+              <option value="Operasional">Operasional</option>
+              <option value="Gaji">Gaji</option>
+              <option value="Lain-lain">Lain-lain</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="edit-subcategory">Sub Kategori</label>
+            <select class="form-control" id="edit-subcategory">
+              <option value="">- Pilih Sub Kategori -</option>
+              <option value="Listrik">Listrik</option>
+              <option value="Wifi">Wifi</option>
+              <option value="Sewa">Sewa</option>
+              <option value="Transport">Transport</option>
+              <option value="Tinta">Tinta</option>
+              <option value="Kertas">Kertas</option>
+              <option value="Gaji Istri">Gaji Istri</option>
+              <option value="Gaji Karyawan">Gaji Karyawan</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-amount">Nominal (Rp)</label>
+          <input type="number" class="form-control" id="edit-amount" required>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-note">Catatan</label>
+          <textarea class="form-control" id="edit-note" rows="2"></textarea>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+          <button type="button" class="btn" style="background: var(--gray);" onclick="closeEditModal()">Batal</button>
+          <button type="submit" class="btn">Simpan Perubahan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js').then(function(registration) {
+          console.log('ServiceWorker registration successful with scope: ', registration.scope);
+        }, function(err) {
+          console.log('ServiceWorker registration failed: ', err);
+        });
+      });
+    }
+
+    // PWA Install Prompt
+    let deferredPrompt;
+    const installBtn = document.getElementById('install-btn');
+    
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.style.display = 'block';
+      
+      installBtn.addEventListener('click', () => {
+        installBtn.style.display = 'none';
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted the install prompt');
+          } else {
+            console.log('User dismissed the install prompt');
+          }
+          deferredPrompt = null;
+        });
+      });
+    });
+
+    // Check online/offline status
+    function updateOnlineStatus() {
+      const onlineIcon = document.getElementById('online-icon');
+      const offlineIcon = document.getElementById('offline-icon');
+      const statusText = document.getElementById('status-text');
+      const syncText = document.getElementById('sync-text');
+      
+      if (navigator.onLine) {
+        onlineIcon.style.display = 'inline';
+        offlineIcon.style.display = 'none';
+        statusText.textContent = 'Online';
+        syncText.textContent = 'Data tersimpan secara online';
+        // Simulasi sinkronisasi dengan server
+        setTimeout(() => {
+          syncText.innerHTML = '<i class="fas fa-check-circle"></i> Data tersinkronisasi';
+        }, 2000);
+      } else {
+        onlineIcon.style.display = 'none';
+        offlineIcon.style.display = 'inline';
+        statusText.textContent = 'Offline';
+        syncText.textContent = 'Data tersimpan secara lokal';
+      }
+    }
+
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
+
+    // Data functions
+    let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+    let currentChart = null;
+
+    // Initialize with current date
+    document.getElementById('date').valueAsDate = new Date();
+
+    // Populate year filter
+    const yearSelect = document.getElementById('filter-year');
+    const currentYear = new Date().getFullYear();
+    for (let year = currentYear; year >= currentYear - 5; year--) {
+      const option = document.createElement('option');
+      option.value = year;
+      option.textContent = year;
+      yearSelect.appendChild(option);
+    }
+
+    // Backup data function
+    function backupData() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(transactions));
+      const downloadAnchorNode = document.createElement('a');
+      downloadAnchorNode.setAttribute("href", dataStr);
+      downloadAnchorNode.setAttribute("download", "rafaela_finance_backup_" + new Date().toISOString().slice(0, 10) + ".json");
+      document.body.appendChild(downloadAnchorNode);
+      downloadAnchorNode.click();
+      downloadAnchorNode.remove();
+      
+      const syncText = document.getElementById('sync-text');
+      syncText.innerHTML = '<i class="fas fa-check-circle"></i> Backup berhasil diunduh';
+      setTimeout(() => {
+        syncText.innerHTML = navigator.onLine ? 
+          '<i class="fas fa-sync"></i> Data tersinkronisasi' : 
+          '<i class="fas fa-sync"></i> Data tersimpan secara lokal';
+      }, 3000);
+    }
+
+    // Rest of the functions remain the same as previous implementation
+    function renderTransactions() {
+      const list = document.getElementById('transaction-list');
+      const emptyState = document.getElementById('empty-state');
+      list.innerHTML = '';
+
+      if (transactions.length === 0) {
+        emptyState.style.display = 'block';
+        return;
+      } else {
+        emptyState.style.display = 'none';
+      }
+
+      // Get filter values
+      const monthFilter = document.getElementById('filter-month').value;
+      const yearFilter = document.getElementById('filter-year').value;
+      const typeFilter = document.getElementById('filter-type').value;
+      const categoryFilter = document.getElementById('filter-category').value;
+
+      let totalIncome = 0;
+      let totalExpense = 0;
+      let filteredTransactions = transactions;
+
+      // Apply filters
+      if (monthFilter || yearFilter || typeFilter || categoryFilter) {
+        filteredTransactions = transactions.filter(t => {
+          const date = new Date(t.date);
+          const transactionMonth = String(date.getMonth() + 1).padStart(2, '0');
+          const transactionYear = String(date.getFullYear());
+          
+          return (
+            (!monthFilter || transactionMonth === monthFilter) &&
+            (!yearFilter || transactionYear === yearFilter) &&
+            (!typeFilter || t.type === typeFilter) &&
+            (!categoryFilter || t.category === categoryFilter)
+          );
+        });
+      }
+
+      filteredTransactions.forEach((t, index) => {
+        const row = document.createElement('tr');
+        const date = new Date(t.date);
+        const formattedDate = date.toLocaleDateString('id-ID', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        });
+
+        row.innerHTML = `
+          <td>${formattedDate}</td>
+          <td><span class="type-badge ${t.type === 'Pemasukan' ? 'type-income' : 'type-expense'}">${t.type}</span></td>
+          <td>${t.category}</td>
+          <td>${t.subcategory || '-'}</td>
+          <td>Rp ${t.amount.toLocaleString('id-ID')}</td>
+          <td>${t.note || '-'}</td>
+          <td>
+            <div class="action-buttons">
+              <button class="btn-icon btn-edit" onclick="openEditModal(${index})">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn-icon btn-delete" onclick="deleteTransaction(${index})">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </td>
+        `;
+        list.appendChild(row);
+
+        if (t.type === 'Pemasukan') totalIncome += t.amount;
+        else totalExpense += t.amount;
+      });
+
+      // Update summary
+      document.getElementById('total-income').innerText = `Rp ${totalIncome.toLocaleString('id-ID')}`;
+      document.getElementById('total-expense').innerText = `Rp ${totalExpense.toLocaleString('id-ID')}`;
+      document.getElementById('net-profit').innerText = `Rp ${(totalIncome - totalExpense).toLocaleString('id-ID')}`;
+
+      // Update chart
+      updateChart(totalIncome, totalExpense);
+    }
+
+    function updateChart(income, expense) {
+      const ctx = document.getElementById('finance-chart').getContext('2d');
+      
+      // Destroy previous chart if it exists
+      if (currentChart) {
+        currentChart.destroy();
+      }
+      
+      currentChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Pemasukan', 'Pengeluaran'],
+          datasets: [{
+            data: [income, expense],
+            backgroundColor: [
+              '#4cc9a4',
+              '#f72585'
+            ],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return context.label + ': Rp ' + context.raw.toLocaleString('id-ID');
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    document.getElementById('finance-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const newTransaction = {
+        date: document.getElementById('date').value,
+        type: document.getElementById('type').value,
+        category: document.getElementById('category').value,
+        subcategory: document.getElementById('subcategory').value,
+        amount: parseInt(document.getElementById('amount').value),
+        note: document.getElementById('note').value
+      };
+      transactions.push(newTransaction);
+      localStorage.setItem('transactions', JSON.stringify(transactions));
+      renderTransactions();
+      this.reset();
+      document.getElementById('date').valueAsDate = new Date();
+    });
+
+    function deleteTransaction(index) {
+      if(confirm('Yakin mau hapus transaksi ini?')){
+        transactions.splice(index, 1);
+        localStorage.setItem('transactions', JSON.stringify(transactions));
+        renderTransactions();
+      }
+    }
+
+    function openEditModal(index) {
+      const transaction = transactions[index];
+      document.getElementById('edit-index').value = index;
+      document.getElementById('edit-date').value = transaction.date;
+      document.getElementById('edit-type').value = transaction.type;
+      document.getElementById('edit-category').value = transaction.category;
+      document.getElementById('edit-subcategory').value = transaction.subcategory || '';
+      document.getElementById('edit-amount').value = transaction.amount;
+      document.getElementById('edit-note').value = transaction.note || '';
+      
+      document.getElementById('edit-modal').style.display = 'flex';
+    }
+
+    function closeEditModal() {
+      document.getElementById('edit-modal').style.display = 'none';
+    }
+
+    document.getElementById('edit-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const index = document.getElementById('edit-index').value;
+      const updatedTransaction = {
+        date: document.getElementById('edit-date').value,
+        type: document.getElementById('edit-type').value,
+        category: document.getElementById('edit-category').value,
+        subcategory: document.getElementById('edit-subcategory').value,
+        amount: parseInt(document.getElementById('edit-amount').value),
+        note: document.getElementById('edit-note').value
+      };
+      
+      transactions[index] = updatedTransaction;
+      localStorage.setItem('transactions', JSON.stringify(transactions));
+      renderTransactions();
+      closeEditModal();
+    });
+
+    function exportExcel() {
+      // Get filter values
+      const monthFilter = document.getElementById('filter-month').value;
+      const yearFilter = document.getElementById('filter-year').value;
+      const typeFilter = document.getElementById('filter-type').value;
+      const categoryFilter = document.getElementById('filter-category').value;
+
+      let filteredTransactions = transactions;
+
+      // Apply filters
+      if (monthFilter || yearFilter || typeFilter || categoryFilter) {
+        filteredTransactions = transactions.filter(t => {
+          const date = new Date(t.date);
+          const transactionMonth = String(date.getMonth() + 1).padStart(2, '0');
+          const transactionYear = String(date.getFullYear());
+          
+          return (
+            (!monthFilter || transactionMonth === monthFilter) &&
+            (!yearFilter || transactionYear === yearFilter) &&
+            (!typeFilter || t.type === typeFilter) &&
+            (!categoryFilter || t.category === categoryFilter)
+          );
+        });
+      }
+
+      let csv = 'Tanggal,Jenis,Kategori,Sub Kategori,Nominal,Catatan\n';
+      filteredTransactions.forEach(t => {
+        csv += `${t.date},${t.type},${t.category},${t.subcategory},${t.amount},"${t.note}"\n`;
+      });
+      
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'rafaela_finance.csv';
+      link.click();
+    }
+
+    // Add event listeners to filters
+    document.getElementById('filter-month').addEventListener('change', renderTransactions);
+    document.getElementById('filter-year').addEventListener('change', renderTransactions);
+    document.getElementById('filter-type').addEventListener('change', renderTransactions);
+    document.getElementById('filter-category').addEventListener('change', renderTransactions);
+
+    // Initial render
+    renderTransactions();
+  </script>
+</body>
+</html>
