@@ -27,6 +27,7 @@
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             padding: 20px;
@@ -39,6 +40,7 @@
             width: 100%;
             max-width: 450px;
             overflow: hidden;
+            margin-bottom: 20px;
         }
         
         .header {
@@ -101,7 +103,7 @@
             font-size: 16px;
             font-weight: 500;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s;
             text-align: center;
             margin-bottom: 15px;
         }
@@ -263,10 +265,9 @@
         
         .footer {
             text-align: center;
-            padding: 20px;
             color: var(--gray);
             font-size: 14px;
-            border-top: 1px solid #eee;
+            margin-top: 20px;
         }
         
         .loading {
@@ -290,6 +291,69 @@
             100% { transform: rotate(360deg); }
         }
         
+        .dashboard {
+            display: none;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 800px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .logout-btn {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .dashboard-content {
+            padding: 20px;
+        }
+        
+        .welcome-message {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+        
         @media (max-width: 480px) {
             .container {
                 border-radius: 10px;
@@ -306,6 +370,15 @@
             .btn {
                 padding: 12px;
             }
+            
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .logout-btn {
+                margin-top: 10px;
+            }
         }
     </style>
     <!-- Firebase SDK -->
@@ -314,7 +387,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="loginContainer">
         <div class="header">
             <h1>Rafaela Finance</h1>
             <p>Sistem Manajemen Keuangan</p>
@@ -374,10 +447,46 @@
                 <p style="margin-top: 10px;">Memproses...</p>
             </div>
         </div>
-        
-        <div class="footer">
-            <p>© 2023 Rafaela Finance - Sistem Manajemen Keuangan</p>
+    </div>
+    
+    <div class="dashboard" id="dashboard">
+        <div class="dashboard-header">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div>
+                    <div id="userName">Pengguna</div>
+                    <div id="userRole" style="font-size: 12px; opacity: 0.8;">Role</div>
+                </div>
+            </div>
+            <button class="logout-btn" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
         </div>
+        
+        <div class="dashboard-content">
+            <div class="welcome-message">
+                <h3>Selamat datang, <span id="welcomeUserName">Pengguna</span>!</h3>
+                <p>Anda login sebagai <span id="welcomeUserRole">role</span> pada sistem Rafaela Finance.</p>
+            </div>
+            
+            <div id="ownerDashboard" style="display: none;">
+                <h3><i class="fas fa-users-cog"></i> Manajemen Staff</h3>
+                <div class="staff-list" id="dashboardStaffList">
+                    <p style="text-align: center; color: var(--gray);">Memuat data staff...</p>
+                </div>
+            </div>
+            
+            <div id="staffDashboard" style="display: none;">
+                <h3><i class="fas fa-tasks"></i> Dashboard Staff</h3>
+                <p>Ini adalah dashboard untuk staff. Fitur-fitur khusus staff akan ditampilkan di sini.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>© <span id="currentYear">2025</span> Rafaela Print - Sistem Manajemen Keuangan</p>
     </div>
 
     <script>
@@ -401,6 +510,8 @@
         const db = firebase.firestore();
         
         // Elemen UI
+        const loginContainer = document.getElementById('loginContainer');
+        const dashboard = document.getElementById('dashboard');
         const ownerBtn = document.getElementById('ownerBtn');
         const staffBtn = document.getElementById('staffBtn');
         const ownerLogin = document.getElementById('ownerLogin');
@@ -416,6 +527,18 @@
         const adminPanel = document.getElementById('adminPanel');
         const staffList = document.getElementById('staffList');
         const loading = document.getElementById('loading');
+        const userName = document.getElementById('userName');
+        const userRole = document.getElementById('userRole');
+        const welcomeUserName = document.getElementById('welcomeUserName');
+        const welcomeUserRole = document.getElementById('welcomeUserRole');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const ownerDashboard = document.getElementById('ownerDashboard');
+        const staffDashboard = document.getElementById('staffDashboard');
+        const dashboardStaffList = document.getElementById('dashboardStaffList');
+        const currentYear = document.getElementById('currentYear');
+        
+        // Set tahun saat ini di footer
+        currentYear.textContent = new Date().getFullYear();
         
         // Variabel global
         let currentUser = null;
@@ -451,9 +574,8 @@
                     email: 'rafaela@example.com'
                 };
                 
-                // Tampilkan panel admin
-                adminPanel.style.display = 'block';
-                loadStaffAccounts();
+                // Tampilkan dashboard
+                showDashboard();
                 
                 // Catat aktivitas login
                 logActivity('LOGIN', 'Owner login ke sistem');
@@ -484,6 +606,9 @@
                     showSuccess(`Login berhasil sebagai ${user.displayName}`);
                     hideError();
                     
+                    // Tampilkan dashboard
+                    showDashboard();
+                    
                     // Simpan data staff ke Firestore jika belum ada
                     saveStaffAccount(user);
                     
@@ -499,29 +624,36 @@
         
         // Simpan akun staff ke Firestore
         function saveStaffAccount(user) {
+            // Atur aturan keamanan Firestore untuk mengizinkan penulisan
             db.collection('staff').doc(user.uid).set({
                 name: user.displayName,
                 email: user.email,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            })
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                role: 'staff'
+            }, { merge: true })
             .then(() => {
                 console.log('Data staff berhasil disimpan');
             })
             .catch((error) => {
                 console.error('Error menyimpan data staff: ', error);
+                showError('Error menyimpan data staff. Pastikan aturan keamanan Firestore sudah diatur dengan benar.');
             });
         }
         
         // Muat daftar akun staff
         function loadStaffAccounts() {
             staffList.innerHTML = '<p style="text-align: center; color: var(--gray);">Memuat data staff...</p>';
+            dashboardStaffList.innerHTML = '<p style="text-align: center; color: var(--gray);">Memuat data staff...</p>';
             
+            // Atur aturan keamanan Firestore untuk mengizinkan pembacaan
             db.collection('staff').get()
                 .then((querySnapshot) => {
                     staffList.innerHTML = '';
+                    dashboardStaffList.innerHTML = '';
                     
                     if (querySnapshot.empty) {
                         staffList.innerHTML = '<p style="text-align: center; color: var(--gray);">Tidak ada staff terdaftar.</p>';
+                        dashboardStaffList.innerHTML = '<p style="text-align: center; color: var(--gray);">Tidak ada staff terdaftar.</p>';
                         return;
                     }
                     
@@ -538,11 +670,12 @@
                                 <i class="fas fa-trash-alt"></i>
                             </button>
                         `;
-                        staffList.appendChild(staffItem);
+                        staffList.appendChild(staffItem.cloneNode(true));
+                        dashboardStaffList.appendChild(staffItem);
                     });
                     
                     // Tambahkan event listener untuk tombol hapus
-                    const deleteButtons = staffList.querySelectorAll('.delete-btn');
+                    const deleteButtons = document.querySelectorAll('.delete-btn');
                     deleteButtons.forEach(button => {
                         button.addEventListener('click', (e) => {
                             const staffId = e.currentTarget.getAttribute('data-id');
@@ -551,7 +684,9 @@
                     });
                 })
                 .catch((error) => {
-                    staffList.innerHTML = `<p style="text-align: center; color: var(--danger);">Error memuat data: ${error.message}</p>`;
+                    const errorMsg = `Error memuat data: ${error.message}. Pastikan aturan keamanan Firestore sudah diatur dengan benar.`;
+                    staffList.innerHTML = `<p style="text-align: center; color: var(--danger);">${errorMsg}</p>`;
+                    dashboardStaffList.innerHTML = `<p style="text-align: center; color: var(--danger);">${errorMsg}</p>`;
                 });
         }
         
@@ -560,6 +695,7 @@
             if (confirm('Apakah Anda yakin ingin menghapus akun staff ini?')) {
                 showLoading();
                 
+                // Atur aturan keamanan Firestore untuk mengizinkan penghapusan
                 db.collection('staff').doc(staffId).delete()
                     .then(() => {
                         hideLoading();
@@ -571,10 +707,54 @@
                     })
                     .catch((error) => {
                         hideLoading();
-                        showError(`Error menghapus akun: ${error.message}`);
+                        showError(`Error menghapus akun: ${error.message}. Pastikan aturan keamanan Firestore sudah diatur dengan benar.`);
                     });
             }
         }
+        
+        // Tampilkan dashboard setelah login berhasil
+        function showDashboard() {
+            loginContainer.style.display = 'none';
+            dashboard.style.display = 'block';
+            
+            // Update informasi pengguna di dashboard
+            userName.textContent = currentUser.name;
+            userRole.textContent = currentUser.role === 'owner' ? 'Pemilik Sistem' : 'Staf';
+            welcomeUserName.textContent = currentUser.name;
+            welcomeUserRole.textContent = currentUser.role === 'owner' ? 'Pemilik' : 'Staf';
+            
+            // Tampilkan panel yang sesuai berdasarkan peran pengguna
+            if (currentUser.role === 'owner') {
+                ownerDashboard.style.display = 'block';
+                staffDashboard.style.display = 'none';
+                loadStaffAccounts();
+            } else {
+                ownerDashboard.style.display = 'none';
+                staffDashboard.style.display = 'block';
+            }
+        }
+        
+        // Logout
+        logoutBtn.addEventListener('click', () => {
+            auth.signOut().then(() => {
+                // Kembali ke halaman login
+                dashboard.style.display = 'none';
+                loginContainer.style.display = 'block';
+                
+                // Reset form
+                usernameInput.value = '';
+                passwordInput.value = '';
+                
+                // Catat aktivitas logout
+                if (currentUser) {
+                    logActivity('LOGOUT', `${currentUser.name} logout dari sistem`);
+                }
+                
+                currentUser = null;
+            }).catch((error) => {
+                showError(`Error saat logout: ${error.message}`);
+            });
+        });
         
         // Catat aktivitas ke Google Sheets
         function logActivity(action, details) {
@@ -645,8 +825,7 @@
                     uid: user.uid
                 };
                 
-                showSuccess(`Selamat datang, ${user.displayName}`);
-                hideError();
+                showDashboard();
             }
         });
         
