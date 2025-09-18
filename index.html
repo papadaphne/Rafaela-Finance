@@ -1,251 +1,743 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - Rafaela Finance</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    :root {
-      --primary: #4361ee;
-      --secondary: #3a0ca3;
-      --success: #4cc9f0;
-      --danger: #f72585;
-      --light: #f8f9fa;
-      --dark: #212529;
-      --gray: #6c757d;
-    }
-    * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background:linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:20px; }
-    .container { background:#fff; border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,.15); width:100%; max-width:450px; overflow:hidden; margin-bottom:20px; }
-    .header { background:linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color:#fff; padding:25px; text-align:center; }
-    .header h1 { font-size:28px; margin-bottom:5px; font-weight:600; }
-    .content { padding:25px; }
-    .form-group { margin-bottom:20px; }
-    .form-group label { display:block; margin-bottom:8px; color:var(--dark); font-weight:500; font-size:14px; }
-    .form-group input { width:100%; padding:14px 15px; border:1px solid #ddd; border-radius:8px; font-size:16px; transition:all .3s; }
-    .form-group input:focus { border-color:var(--primary); outline:none; box-shadow:0 0 0 3px rgba(67,97,238,.2); }
-    .btn { display:block; width:100%; padding:14px; background:var(--primary); color:#fff; border:none; border-radius:8px; font-size:16px; font-weight:500; cursor:pointer; transition:all .3s; text-align:center; margin-bottom:15px; }
-    .btn:hover { background:var(--secondary); transform:translateY(-2px); box-shadow:0 4px 10px rgba(0,0,0,.15); }
-    .btn-google { background:#db4437; display:flex; align-items:center; justify-content:center; }
-    .btn-google:hover { background:#c03a2e; }
-    .btn i { margin-right:10px; }
-    .divider { display:flex; align-items:center; margin:25px 0; color:var(--gray); }
-    .divider::before, .divider::after { content:""; flex:1; height:1px; background:#ddd; }
-    .divider span { padding:0 15px; font-size:14px; }
-    .alert { padding:12px 15px; border-radius:8px; margin-bottom:20px; display:flex; align-items:center; }
-    .alert-error { background:#ffebee; color:#c62828; border:1px solid #ef9a9a; }
-    .alert-success { background:#e8f5e9; color:#2e7d32; border:1px solid #a5d6a7; }
-    .user-type { display:flex; margin-bottom:20px; border-radius:8px; overflow:hidden; border:1px solid #ddd; }
-    .user-type-btn { flex:1; padding:12px; text-align:center; background:#f8f9fa; cursor:pointer; transition:all .3s; font-weight:500; }
-    .user-type-btn.active { background:var(--primary); color:#fff; }
-    .dashboard { display:none; background:#fff; border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,.15); width:100%; max-width:800px; overflow:hidden; margin-bottom:20px; }
-    .dashboard-header { background:linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color:#fff; padding:20px; display:flex; justify-content:space-between; align-items:center; }
-    .user-info { display:flex; align-items:center; }
-    .user-avatar { width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,.2); display:flex; align-items:center; justify-content:center; margin-right:10px; font-size:20px; }
-    .logout-btn { background:rgba(255,255,255,.2); color:#fff; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; }
-    .logout-btn:hover { background:rgba(255,255,255,.3); }
-    .welcome-message { margin-bottom:20px; padding:15px; background:#f8f9fa; border-radius:8px; border-left:4px solid var(--primary); }
-    .security-note { background:#fff3cd; border-left:4px solid #ffc107; color:#856404; padding:15px; margin:20px 0; border-radius:5px; }
-    .loading { display:none; text-align:center; padding:15px; }
-    .loading-spinner { border:3px solid #f3f3f3; border-top:3px solid var(--primary); border-radius:50%; width:30px; height:30px; animation:spin 1s linear infinite; margin:0 auto; }
-    @keyframes spin { 0%{transform:rotate(0deg);} 100%{transform:rotate(360deg);} }
-  </style>
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rafaela Finance</title>
+    <meta name="description" content="Aplikasi manajemen keuangan untuk bisnis kecil">
+    <meta name="theme-color" content="#4361ee">
+    
+    <link rel="manifest" href="manifest(2).json">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --success: #4cc9a4;
+            --danger: #f72585;
+            --warning: #fca311;
+            --info: #4cc9f0;
+            --light: #f8f9fa;
+            --dark: #212529;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fb;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .card {
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar {
+            width: 250px;
+            transition: all 0.3s ease;
+        }
+        
+        .main-content {
+            transition: all 0.3s ease;
+        }
+        
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        .type-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .type-income {
+            background-color: rgba(76, 201, 164, 0.15);
+            color: #4cc9a4;
+        }
+        
+        .type-expense {
+            background-color: rgba(247, 37, 133, 0.15);
+            color: #f72585;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 0.375rem;
+            box-sizing: border-box;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .invoice-item {
+            display: flex;
+            margin-bottom: 1rem;
+            gap: 0.5rem;
+        }
+        
+        .invoice-item input {
+            flex: 1;
+        }
+        
+        .invoice-item-actions {
+            display: flex;
+            align-items: center;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                z-index: 100;
+                height: 100vh;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 99;
+            }
+            
+            .overlay.open {
+                display: block;
+            }
+            
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+                padding: 15px;
+            }
+            
+            .invoice-item {
+                flex-direction: column;
+            }
+        }
+        
+        /* Invoice Template Styles */
+        .invoice-template {
+            display: none;
+            padding: 20px;
+            background-color: white;
+            border: 1px solid #ddd;
+            margin-top: 20px;
+        }
+        
+        .invoice-header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 20px;
+        }
+        
+        .invoice-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .invoice-items {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        .invoice-items th, .invoice-items td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        .invoice-items th {
+            background-color: #f5f5f5;
+        }
+        
+        .invoice-totals {
+            margin-left: auto;
+            width: 300px;
+        }
+        
+        .invoice-totals div {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .invoice-footer {
+            margin-top: 30px;
+            text-align: center;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+
+        .offline {
+            color: #f72585;
+        }
+
+        .online {
+            color: #4cc9a4;
+        }
+
+        .sync-status {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+    </style>
 </head>
-<body>
-  <div class="container" id="loginContainer">
-    <div class="header">
-      <h1>Rafaela Finance</h1>
-      <p>Sistem Manajemen Keuangan</p>
+<body class="bg-gray-100">
+    <div id="pwa-install-container" class="notification bg-white text-gray-800 p-4 rounded-lg shadow-lg hidden">
+        <p class="mb-2">Aplikasi ini dapat dipasang ke perangkat Anda.</p>
+        <button id="pwa-install-btn" class="w-full bg-blue-500 text-white py-2 rounded-lg font-medium hover:bg-blue-600 transition duration-200">
+            <i class="fas fa-download mr-2"></i>Pasang Aplikasi
+        </button>
     </div>
-    <div class="content">
-      <div class="alert alert-error" id="errorAlert" style="display:none;"><i class="fas fa-exclamation-circle"></i><span id="errorMessage"></span></div>
-      <div class="alert alert-success" id="successAlert" style="display:none;"><i class="fas fa-check-circle"></i><span id="successMessage"></span></div>
 
-      <div class="user-type">
-        <div class="user-type-btn active" id="ownerBtn">Owner</div>
-        <div class="user-type-btn" id="staffBtn">Staff</div>
-      </div>
-
-      <div id="ownerLogin">
-        <div class="form-group">
-          <label for="username">Username</label>
-          <input type="text" id="username" placeholder="Masukkan username">
+    <div id="login-screen" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-indigo-700 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-800">Rafaela Finance</h1>
+                <p class="text-gray-600">Aplikasi Manajemen Keuangan</p>
+            </div>
+            
+            <form id="login-form">
+                <div class="mb-4">
+                    <label for="login-email" class="block text-gray-700 text-sm font-medium mb-2">Email</label>
+                    <input type="email" id="login-email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Masukkan email" required>
+                </div>
+                
+                <div class="mb-6">
+                    <label for="login-password" class="block text-gray-700 text-sm font-medium mb-2">Password</label>
+                    <input type="password" id="login-password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Masukkan password" required>
+                </div>
+                
+                <button type="submit" class="w-full bg-blue-500 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-600 transition duration-200">
+                    <i class="fas fa-sign-in-alt mr-2"></i> Masuk
+                </button>
+            </form>
+            <div class="mt-4 text-center">
+                <p>Belum punya akun? <a href="#" id="show-register" class="text-blue-500 hover:underline">Daftar di sini</a></p>
+            </div>
         </div>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" placeholder="Masukkan password">
+    </div>
+    
+    <div id="register-screen" class="hidden min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-indigo-700 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-800">Daftar Akun Baru</h1>
+                <p class="text-gray-600">Untuk memulai menggunakan Rafaela Finance</p>
+            </div>
+            <form id="register-form">
+                <div class="mb-4">
+                    <label for="register-name" class="block text-gray-700 text-sm font-medium mb-2">Nama Lengkap</label>
+                    <input type="text" id="register-name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Nama Lengkap" required>
+                </div>
+                <div class="mb-4">
+                    <label for="register-email" class="block text-gray-700 text-sm font-medium mb-2">Email</label>
+                    <input type="email" id="register-email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Email" required>
+                </div>
+                <div class="mb-6">
+                    <label for="register-password" class="block text-gray-700 text-sm font-medium mb-2">Password</label>
+                    <input type="password" id="register-password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Password (min. 6 karakter)" required>
+                </div>
+                <button type="submit" class="w-full bg-green-500 text-white py-3 px-4 rounded-lg font-medium hover:bg-green-600 transition duration-200">
+                    <i class="fas fa-user-plus mr-2"></i> Daftar
+                </button>
+            </form>
+            <div class="mt-4 text-center">
+                <p>Sudah punya akun? <a href="#" id="show-login" class="text-blue-500 hover:underline">Masuk</a></p>
+            </div>
         </div>
-        <button class="btn" id="loginOwnerBtn"><i class="fas fa-sign-in-alt"></i> Login sebagai Owner</button>
-      </div>
-
-      <div id="staffLogin" style="display:none;">
-        <div class="divider"><span>Login dengan Google</span></div>
-        <button class="btn btn-google" id="googleLoginBtn"><i class="fab fa-google"></i>Login dengan Google</button>
-      </div>
     </div>
-  </div>
 
-  <div class="dashboard" id="dashboard">
-    <div class="dashboard-header">
-      <div class="user-info">
-        <div class="user-avatar"><i class="fas fa-user"></i></div>
-        <div>
-          <div id="userName">Pengguna</div>
-          <div id="userRole" style="font-size:12px; opacity:.8;">Role</div>
+    <div id="app-container" class="hidden min-h-screen flex flex-col md:flex-row">
+        <div id="sidebar-overlay" class="overlay hidden" onclick="toggleSidebar()"></div>
+
+        <div id="sidebar" class="sidebar bg-gray-800 text-white h-screen fixed md:relative flex flex-col">
+            <div class="p-5 border-b border-gray-700">
+                <div class="flex items-center">
+                    <div class="text-2xl font-bold mr-3">RF</div>
+                    <div>
+                        <h2 class="font-semibold">Rafaela Finance</h2>
+                        <p class="text-xs text-gray-400" id="user-role-display">Pengguna</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto py-4">
+                <nav class="space-y-1 px-3">
+                    <a href="#" onclick="showView('dashboard')" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 rounded-lg transition duration-150">
+                        <i class="fas fa-tachometer-alt w-5 mr-3 text-center"></i>
+                        Dashboard
+                    </a>
+                    <a href="#" onclick="showView('keuangan')" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 rounded-lg transition duration-150">
+                        <i class="fas fa-wallet w-5 mr-3 text-center"></i>
+                        Transaksi
+                    </a>
+                    <a href="#" onclick="showView('karyawan')" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 rounded-lg transition duration-150">
+                        <i class="fas fa-users w-5 mr-3 text-center"></i>
+                        Manajemen Karyawan
+                    </a>
+                    <a href="#" onclick="showView('laporan')" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 rounded-lg transition duration-150">
+                        <i class="fas fa-chart-pie w-5 mr-3 text-center"></i>
+                        Laporan
+                    </a>
+                </nav>
+            </div>
+            
+            <div class="p-4 border-t border-gray-700">
+                <button onclick="logout()" class="flex items-center w-full px-4 py-3 text-gray-300 hover:bg-gray-700 rounded-lg transition duration-150">
+                    <i class="fas fa-sign-out-alt w-5 mr-3 text-center"></i>
+                    Keluar
+                </button>
+            </div>
         </div>
-      </div>
-      <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+
+        <div class="main-content flex-1 md:ml-0">
+            <header class="bg-white shadow-sm sticky top-0 z-50">
+                <div class="flex items-center justify-between p-4">
+                    <div class="flex items-center">
+                        <button onclick="toggleSidebar()" class="md:hidden text-gray-500 focus:outline-none mr-3">
+                            <i class="fas fa-bars fa-lg"></i>
+                        </button>
+                        <h1 id="page-title" class="text-2xl font-bold text-gray-800">Dashboard</h1>
+                    </div>
+                    
+                    <div class="flex items-center">
+                        <span id="connection-status" class="sync-status text-gray-500 mr-4">
+                            <i class="fas fa-wifi text-xl online"></i>
+                            <span class="hidden md:block">Online</span>
+                        </span>
+                        <div class="mr-4 text-right hidden md:block">
+                            <p class="font-medium" id="user-name-display">Pengguna</p>
+                            <p class="text-sm text-gray-500" id="user-email-display"></p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
+                            <span id="user-avatar">?</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="p-4 md:p-6">
+                <div id="dashboard-view">
+                    <div class="mb-6">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <h2 class="text-xl font-semibold text-gray-800">Ringkasan Keuangan</h2>
+                            <select id="filter-bulan-dashboard" onchange="updateDashboard()" class="p-2 border border-gray-300 rounded-lg bg-white shadow-sm">
+                                <option value="semua">Semua Bulan</option>
+                            </select>
+                        </div>
+                        <p class="text-gray-500 mt-1">Ringkasan keuangan Anda berdasarkan periode yang dipilih.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                        <div class="card bg-white p-6 rounded-xl border-t-4 border-green-500">
+                            <div class="flex items-center">
+                                <div class="p-3 bg-green-100 rounded-full">
+                                    <i class="fas fa-arrow-down text-green-500 text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-gray-500">Total Pemasukan</p>
+                                    <p id="total-pemasukan" class="text-2xl font-bold">Rp 0</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card bg-white p-6 rounded-xl border-t-4 border-red-500">
+                            <div class="flex items-center">
+                                <div class="p-3 bg-red-100 rounded-full">
+                                    <i class="fas fa-arrow-up text-red-500 text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-gray-500">Total Pengeluaran</p>
+                                    <p id="total-pengeluaran" class="text-2xl font-bold">Rp 0</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card bg-white p-6 rounded-xl border-t-4 border-blue-500">
+                            <div class="flex items-center">
+                                <div class="p-3 bg-blue-100 rounded-full">
+                                    <i class="fas fa-chart-line text-blue-500 text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-gray-500">Laba/Rugi Bersih</p>
+                                    <p id="laba-bersih" class="text-2xl font-bold">Rp 0</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="card bg-white p-6 rounded-xl">
+                            <h2 class="text-xl font-semibold mb-4">Grafik Keuangan</h2>
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="finance-chart"></canvas>
+                            </div>
+                        </div>
+                        <div class="card bg-white p-6 rounded-xl">
+                            <h2 class="text-xl font-semibold mb-4">Transaksi Terbaru</h2>
+                            <div id="transaksi-terbaru-list" class="space-y-4">
+                                <div class="empty-state text-center text-gray-500">
+                                    <p>Tidak ada transaksi terbaru.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="keuangan-view" class="hidden">
+                    <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
+                        <h2 class="text-xl font-semibold text-gray-800">Manajemen Transaksi</h2>
+                        <button onclick="openModal('addTransactionModal')" class="btn btn-primary flex items-center">
+                            <i class="fas fa-plus mr-2"></i> Tambah Transaksi
+                        </button>
+                    </div>
+
+                    <div class="card bg-white p-6 rounded-xl mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div class="form-group">
+                                <label for="filter-month" class="block text-gray-700 text-sm font-medium mb-1">Bulan</label>
+                                <select id="filter-month" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                    <option value="semua">Semua</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="filter-year" class="block text-gray-700 text-sm font-medium mb-1">Tahun</label>
+                                <select id="filter-year" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                    <option value="semua">Semua</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="filter-type" class="block text-gray-700 text-sm font-medium mb-1">Jenis</label>
+                                <select id="filter-type" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                    <option value="semua">Semua</option>
+                                    <option value="income">Pemasukan</option>
+                                    <option value="expense">Pengeluaran</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="filter-category" class="block text-gray-700 text-sm font-medium mb-1">Kategori</label>
+                                <select id="filter-category" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                    <option value="semua">Semua</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-white p-6 rounded-xl overflow-x-auto">
+                        <table class="w-full table-auto">
+                            <thead>
+                                <tr class="bg-gray-100 text-left text-gray-600 uppercase text-sm leading-normal">
+                                    <th class="py-3 px-6">Tanggal</th>
+                                    <th class="py-3 px-6">Jenis</th>
+                                    <th class="py-3 px-6">Kategori</th>
+                                    <th class="py-3 px-6">Catatan</th>
+                                    <th class="py-3 px-6">Nominal</th>
+                                    <th class="py-3 px-6 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactions-table-body" class="text-gray-600 text-sm font-light">
+                                </tbody>
+                        </table>
+                        <div id="empty-transactions" class="text-center text-gray-500 py-10 hidden">
+                            <p class="text-lg">Tidak ada transaksi yang cocok dengan filter Anda.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="karyawan-view" class="hidden">
+                    <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
+                        <h2 class="text-xl font-semibold text-gray-800">Manajemen Karyawan</h2>
+                        <button onclick="openModal('addEmployeeModal')" class="btn btn-primary flex items-center">
+                            <i class="fas fa-plus mr-2"></i> Tambah Karyawan
+                        </button>
+                    </div>
+
+                    <div class="card bg-white p-6 rounded-xl overflow-x-auto">
+                        <table class="w-full table-auto">
+                            <thead>
+                                <tr class="bg-gray-100 text-left text-gray-600 uppercase text-sm leading-normal">
+                                    <th class="py-3 px-6">Nama</th>
+                                    <th class="py-3 px-6">Email</th>
+                                    <th class="py-3 px-6">Posisi</th>
+                                    <th class="py-3 px-6">Bergabung</th>
+                                    <th class="py-3 px-6 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="employees-table-body" class="text-gray-600 text-sm font-light">
+                                <tr class="border-b border-gray-200 hover:bg-gray-100">
+                                    <td class="py-3 px-6">Admin Owner</td>
+                                    <td class="py-3 px-6">owner@rafaela.com</td>
+                                    <td class="py-3 px-6">Owner</td>
+                                    <td class="py-3 px-6">2023-01-01</td>
+                                    <td class="py-3 px-6 text-center">
+                                        <button class="btn-icon btn-edit" title="Edit"><i class="fas fa-edit"></i></button>
+                                        <button class="btn-icon btn-delete" title="Hapus"><i class="fas fa-trash-alt"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div id="empty-employees" class="text-center text-gray-500 py-10 hidden">
+                            <p class="text-lg">Tidak ada data karyawan.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="laporan-view" class="hidden">
+                    <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
+                        <h2 class="text-xl font-semibold text-gray-800">Laporan Keuangan</h2>
+                        <div class="flex flex-col sm:flex-row items-center gap-2">
+                            <button id="export-pdf-btn" class="btn btn-primary flex items-center">
+                                <i class="fas fa-file-pdf mr-2"></i> Ekspor PDF
+                            </button>
+                            <button id="export-csv-btn" class="btn btn-success flex items-center">
+                                <i class="fas fa-file-csv mr-2"></i> Ekspor CSV
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card bg-white p-6 rounded-xl mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div class="form-group">
+                                <label for="report-month" class="block text-gray-700 text-sm font-medium mb-1">Bulan</label>
+                                <select id="report-month" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                    <option value="semua">Semua</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="report-year" class="block text-gray-700 text-sm font-medium mb-1">Tahun</label>
+                                <select id="report-year" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                    <option value="semua">Semua</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="report-type" class="block text-gray-700 text-sm font-medium mb-1">Jenis</label>
+                                <select id="report-type" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                    <option value="semua">Semua</option>
+                                    <option value="income">Pemasukan</option>
+                                    <option value="expense">Pengeluaran</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="report-category" class="block text-gray-700 text-sm font-medium mb-1">Kategori</label>
+                                <select id="report-category" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                    <option value="semua">Semua</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card bg-white p-6 rounded-xl">
+                        <h3 class="text-lg font-semibold mb-4">Ringkasan Laporan</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <p class="text-gray-500">Total Pemasukan</p>
+                                <p id="report-income-total" class="text-xl font-bold text-green-600">Rp 0</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500">Total Pengeluaran</p>
+                                <p id="report-expense-total" class="text-xl font-bold text-red-600">Rp 0</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500">Laba Bersih</p>
+                                <p id="report-net-profit" class="text-xl font-bold text-blue-600">Rp 0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
     </div>
-    <div class="dashboard-content">
-      <div class="welcome-message">
-        <h3>Selamat datang, <span id="welcomeUserName">Pengguna</span>!</h3>
-        <p>Anda login sebagai <span id="welcomeUserRole">role</span> pada sistem Rafaela Finance.</p>
-      </div>
-      <div class="security-note">
-        <h4><i class="fas fa-shield-alt"></i> Penting: Keamanan Database</h4>
-        <p>Aturan keamanan Firebase Anda saat ini bersifat publik. Untuk mengamankan data, silakan update aturan keamanan Firestore di Firebase Console.</p>
-      </div>
-      <div id="ownerDashboard" style="display:none;">
-        <h3><i class="fas fa-users-cog"></i> Manajemen Staff</h3>
-        <div class="staff-list" id="dashboardStaffList"><p style="text-align:center; color:var(--gray);">Memuat data staff...</p></div>
-      </div>
-      <div id="staffDashboard" style="display:none;">
-        <h3><i class="fas fa-tasks"></i> Dashboard Staff</h3>
-        <p>Ini adalah dashboard untuk staff.</p>
-      </div>
+
+    <div id="addTransactionModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addTransactionModal')">&times;</span>
+            <h2 class="text-2xl font-semibold mb-4">Tambah Transaksi Baru</h2>
+            <form id="add-transaction-form">
+                <input type="hidden" id="transaction-id">
+                <div class="form-group">
+                    <label for="transaction-date">Tanggal</label>
+                    <input type="date" id="transaction-date" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="transaction-type">Jenis</label>
+                    <select id="transaction-type" class="form-control" required>
+                        <option value="">Pilih...</option>
+                        <option value="income">Pemasukan</option>
+                        <option value="expense">Pengeluaran</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="transaction-category">Kategori</label>
+                    <select id="transaction-category" class="form-control" required>
+                        <option value="">Pilih...</option>
+                        </select>
+                </div>
+                <div class="form-group">
+                    <label for="transaction-subcategory">Sub Kategori</label>
+                    <input type="text" id="transaction-subcategory" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="transaction-amount">Nominal</label>
+                    <input type="number" id="transaction-amount" class="form-control" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="transaction-note">Catatan</label>
+                    <textarea id="transaction-note" class="form-control" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary w-full mt-4">Simpan Transaksi</button>
+            </form>
+        </div>
     </div>
-  </div>
 
-  <div class="footer"><p>© <span id="currentYear">2025</span> Rafaela Print - Sistem Manajemen Keuangan</p></div>
+    <div id="invoice-template" class="invoice-template p-6 bg-white border border-gray-300">
+        <div class="invoice-header text-center">
+            <h1 class="text-3xl font-bold mb-2">INVOICE</h1>
+            <p id="invoice-number" class="text-lg text-gray-600">INV-001</p>
+        </div>
+        <div class="invoice-details mb-6 text-sm text-gray-700">
+            <div>
+                <p><strong>Kepada:</strong> <span id="invoice-customer"></span></p>
+                <p><strong>Tanggal:</strong> <span id="invoice-date"></span></p>
+            </div>
+            <div>
+                <p><strong>Rafaela Finance</strong></p>
+                <p>Semarang, Indonesia</p>
+            </div>
+        </div>
+        
+        <table class="invoice-items w-full border-collapse mb-6 text-sm">
+            <thead>
+                <tr class="bg-gray-100">
+                    <th class="py-2 px-4 border">Deskripsi</th>
+                    <th class="py-2 px-4 border text-right">Harga</th>
+                    <th class="py-2 px-4 border text-center">Jumlah</th>
+                    <th class="py-2 px-4 border text-right">Total</th>
+                </tr>
+            </thead>
+            <tbody id="invoice-items-list">
+            </tbody>
+        </table>
+        
+        <div class="invoice-totals text-right text-sm">
+            <div class="flex justify-between">
+                <span>Subtotal:</span>
+                <span id="invoice-subtotal" class="font-bold">Rp 0</span>
+            </div>
+            <div class="flex justify-between">
+                <span>Pajak (0%):</span>
+                <span id="invoice-tax" class="font-bold">Rp 0</span>
+            </div>
+            <div class="flex justify-between text-lg font-bold">
+                <span>TOTAL:</span>
+                <span id="invoice-total">Rp 0</span>
+            </div>
+        </div>
+        <p class="invoice-footer text-center text-xs text-gray-500 mt-6">Terima kasih atas pesanan Anda!</p>
+    </div>
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyC57gZNXlJoGvTKnTCgCfspMC_qPgkLvtU",
-      authDomain: "rafaela-finance.firebaseapp.com",
-      projectId: "rafaela-finance",
-      storageBucket: "rafaela-finance.firebasestorage.app",
-      messagingSenderId: "45081143872",
-      appId: "1:45081143872:web:91d15b2732c24178ee0da5",
-      measurementId: "G-XM0GEZY4PK"
-    };
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-
-    const loginContainer = document.getElementById('loginContainer');
-    const dashboard = document.getElementById('dashboard');
-    const ownerBtn = document.getElementById('ownerBtn');
-    const staffBtn = document.getElementById('staffBtn');
-    const ownerLogin = document.getElementById('ownerLogin');
-    const staffLogin = document.getElementById('staffLogin');
-    const usernameInput = document.getElementById('username');
-    const passwordInput = document.getElementById('password');
-    const loginOwnerBtn = document.getElementById('loginOwnerBtn');
-    const googleLoginBtn = document.getElementById('googleLoginBtn');
-    const errorAlert = document.getElementById('errorAlert');
-    const errorMessage = document.getElementById('errorMessage');
-    const successAlert = document.getElementById('successAlert');
-    const successMessage = document.getElementById('successMessage');
-    const userName = document.getElementById('userName');
-    const userRole = document.getElementById('userRole');
-    const welcomeUserName = document.getElementById('welcomeUserName');
-    const welcomeUserRole = document.getElementById('welcomeUserRole');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const ownerDashboard = document.getElementById('ownerDashboard');
-    const staffDashboard = document.getElementById('staffDashboard');
-    const dashboardStaffList = document.getElementById('dashboardStaffList');
-    const currentYear = document.getElementById('currentYear');
-
-    currentYear.textContent = new Date().getFullYear();
-
-    let currentUser = null;
-
-    ownerBtn.addEventListener('click', () => {
-      ownerBtn.classList.add('active');
-      staffBtn.classList.remove('active');
-      ownerLogin.style.display = 'block';
-      staffLogin.style.display = 'none';
-    });
-
-    staffBtn.addEventListener('click', () => {
-      staffBtn.classList.add('active');
-      ownerBtn.classList.remove('active');
-      staffLogin.style.display = 'block';
-      ownerLogin.style.display = 'none';
-    });
-
-    // 🔑 Login Owner (connect ke Firebase)
-    loginOwnerBtn.addEventListener('click', () => {
-      const username = usernameInput.value;
-      const password = passwordInput.value;
-      if (username === 'Rafaela' && password === 'Daniarku19') {
-        auth.signInAnonymously()
-          .then(() => {
-            currentUser = {
-              name: 'Rafaela',
-              role: 'owner',
-              email: 'arinkumanja76@gmail.com',
-              uid: "N755UkVPGUXaDdYNCQ10rSBUbYi2" // atau ganti ke GAfTnHx... jika ingin
-            };
-            showSuccess('Login Owner berhasil!');
-            showDashboard();
-          })
-          .catch(err => showError("Error login owner: " + err.message));
-      } else {
-        showError('Username atau password salah!');
-      }
-    });
-
-    // 🔑 Login Staff
-    googleLoginBtn.addEventListener('click', () => {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider)
-        .then((result) => {
-          const user = result.user;
-          currentUser = {
-            name: user.displayName,
-            role: 'staff',
-            email: user.email,
-            uid: user.uid
-          };
-          showSuccess(`Login berhasil sebagai ${user.displayName}`);
-          showDashboard();
-        })
-        .catch(err => showError("Error: " + err.message));
-    });
-
-    function showDashboard() {
-      loginContainer.style.display = 'none';
-      dashboard.style.display = 'block';
-      userName.textContent = currentUser.name;
-      userRole.textContent = currentUser.role === 'owner' ? 'Pemilik Sistem' : 'Staf';
-      welcomeUserName.textContent = currentUser.name;
-      welcomeUserRole.textContent = currentUser.role === 'owner' ? 'Pemilik' : 'Staf';
-      if (currentUser.role === 'owner') {
-        ownerDashboard.style.display = 'block';
-        staffDashboard.style.display = 'none';
-      } else {
-        ownerDashboard.style.display = 'none';
-        staffDashboard.style.display = 'block';
-      }
-    }
-
-    logoutBtn.addEventListener('click', () => {
-      auth.signOut().then(() => {
-        dashboard.style.display = 'none';
-        loginContainer.style.display = 'block';
-        currentUser = null;
-      });
-    });
-
-    function showError(msg){ errorMessage.textContent=msg; errorAlert.style.display='flex'; }
-    function showSuccess(msg){ successMessage.textContent=msg; successAlert.style.display='flex'; setTimeout(()=>successAlert.style.display='none',3000);}
-  </script>
+    <script src="script.js"></script>
 </body>
 </html>
