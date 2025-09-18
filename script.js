@@ -1,19 +1,12 @@
 // Konfigurasi Firebase Anda (Ganti dengan konfigurasi Anda sendiri)
 const firebaseConfig = {
-   apiKey: "AIzaSyC57gZNXlJoGvTKnTCgCfspMC_qPgkLvtU",
-
-  authDomain: "rafaela-finance.firebaseapp.com",
-
-  projectId: "rafaela-finance",
-
-  storageBucket: "rafaela-finance.firebasestorage.app",
-
-  messagingSenderId: "45081143872",
-
-  appId: "1:45081143872:web:91d15b2732c24178ee0da5",
-
-  measurementId: "G-XM0GEZY4PK"
-
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_APP_ID",
+    measurementId: "YOUR_MEASUREMENT_ID"
 };
 
 // Inisialisasi Firebase
@@ -97,10 +90,14 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
     try {
         const userCredential = await auth.createUserWithEmailAndPassword(email, password);
         const user = userCredential.user;
+
+        // Set role based on email
+        const role = email === 'arialmedia.official@gmail.com' ? 'Owner' : 'Pengguna';
+
         await db.collection("users").doc(user.uid).set({
             name: name,
             email: email,
-            role: "pengguna"
+            role: role
         });
         alert("Pendaftaran berhasil! Silakan masuk.");
         document.getElementById('register-screen').classList.add('hidden');
@@ -114,17 +111,31 @@ auth.onAuthStateChanged(async (user) => {
     if (user) {
         userId = user.uid;
         userTransactionsCollection = db.collection("users").doc(userId).collection("transactions");
-        
+
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('register-screen').classList.add('hidden');
         document.getElementById('app-container').classList.remove('hidden');
-        
-        document.getElementById('user-email-display').textContent = user.email;
-        document.getElementById('user-avatar').textContent = user.email.charAt(0).toUpperCase();
+
+        // Fetch user data from Firestore to get name and role
+        const userDoc = await db.collection("users").doc(userId).get();
+        if (userDoc.exists) {
+            const userData = userDoc.data();
+            document.getElementById('user-name-display').textContent = userData.name || user.email;
+            document.getElementById('user-email-display').textContent = userData.email || user.email;
+            document.getElementById('user-role-display').textContent = userData.role || 'Pengguna';
+            document.getElementById('user-avatar').textContent = (userData.name || user.email).charAt(0).toUpperCase();
+
+            // Example of role-based visibility
+            if (userData.role !== 'Owner') {
+                // Hide or disable elements only for non-owner users
+                document.getElementById('karyawan-view').classList.add('hidden');
+                document.querySelector('a[onclick="showView(\'karyawan\')"]').style.display = 'none';
+            }
+        }
 
         // Load data from Firebase
         loadTransactions();
-        
+
         // Cek jika ada data di localStorage, migrasikan ke Firebase
         const localTransactions = JSON.parse(localStorage.getItem('transactions') || '[]');
         if (localTransactions.length > 0) {
@@ -159,7 +170,7 @@ function logout() {
 // Fungsi Database
 async function loadTransactions() {
     try {
-        const snapshot = await userTransactionsCollection.orderBy("date", "desc").get();
+        const snapshot = await userTransactionsCollection.orderBy("timestamp", "desc").get();
         transactions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         renderAll();
     } catch (error) {
@@ -225,6 +236,7 @@ function populateCategories(type = 'all', currentCategory = null) {
             const option = document.createElement('option');
             option.value = cat;
             option.textContent = cat;
+            categorySelect.appendChild(option);
         });
     }
     if (currentCategory) {
