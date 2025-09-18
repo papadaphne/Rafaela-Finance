@@ -286,11 +286,6 @@
             margin: 0 auto;
         }
         
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
         .dashboard {
             display: none;
             background-color: white;
@@ -354,6 +349,15 @@
             border-left: 4px solid var(--primary);
         }
         
+        .security-note {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            color: #856404;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
         @media (max-width: 480px) {
             .container {
                 border-radius: 10px;
@@ -379,6 +383,11 @@
             .logout-btn {
                 margin-top: 10px;
             }
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
     <!-- Firebase SDK -->
@@ -469,6 +478,11 @@
             <div class="welcome-message">
                 <h3>Selamat datang, <span id="welcomeUserName">Pengguna</span>!</h3>
                 <p>Anda login sebagai <span id="welcomeUserRole">role</span> pada sistem Rafaela Finance.</p>
+            </div>
+            
+            <div class="security-note">
+                <h4><i class="fas fa-shield-alt"></i> Penting: Keamanan Database</h4>
+                <p>Aturan keamanan Firebase Anda saat ini bersifat publik. Untuk mengamankan data, silakan update aturan keamanan Firestore di Firebase Console.</p>
             </div>
             
             <div id="ownerDashboard" style="display: none;">
