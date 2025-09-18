@@ -832,12 +832,13 @@
 
     <script>
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyC57gZNXlJoGvTKnTCgCfspMC_qPgkLvtU",
+            authDomain: "rafaela-finance.firebaseapp.com",
+            projectId: "rafaela-finance",
+            storageBucket: "rafaela-finance.firebasestorage.app",
+            messagingSenderId: "45081143872",
+            appId: "1:45081143872:web:91d15b2732c24178ee0da5",
+            measurementId: "G-XM0GEZY4PK"
         };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
@@ -1007,7 +1008,9 @@
                 const year = now.getFullYear();
                 const startDate = new Date(year, filterBulan - 1, 1);
                 const endDate = new Date(year, filterBulan, 0);
-                query = query.where('tanggalPesanan', '>=', startDate).where('tanggalPesanan', '<=', endDate);
+                query = query.where('tanggalPesanan', '>=', startDate).where('tanggalPesanan', '<=', endDate).orderBy('tanggalPesanan', 'desc');
+            } else {
+                query = query.orderBy('tanggalPesanan', 'desc');
             }
 
             const snapshot = await query.get();
@@ -1031,7 +1034,6 @@
             document.getElementById('laba-kotor').textContent = formatRupiah(totalPenjualan - totalHPP);
             
             // Tampilkan 5 pesanan terbaru
-            pesananArray.sort((a, b) => b.tanggalPesanan.toDate() - a.tanggalPesanan.toDate());
             const latestPesanan = pesananArray.slice(0, 5);
             if (latestPesanan.length > 0) {
                 latestPesanan.forEach(p => {
