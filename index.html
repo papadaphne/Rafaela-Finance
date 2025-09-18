@@ -1,852 +1,251 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Rafaela Finance</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --primary: #4361ee;
-            --secondary: #3a0ca3;
-            --success: #4cc9f0;
-            --danger: #f72585;
-            --light: #f8f9fa;
-            --dark: #212529;
-            --gray: #6c757d;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        
-        .container {
-            background-color: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            width: 100%;
-            max-width: 450px;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-        
-        .header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            padding: 25px;
-            text-align: center;
-        }
-        
-        .header h1 {
-            font-size: 28px;
-            margin-bottom: 5px;
-            font-weight: 600;
-        }
-        
-        .header p {
-            opacity: 0.9;
-            font-size: 16px;
-        }
-        
-        .content {
-            padding: 25px;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--dark);
-            font-weight: 500;
-            font-size: 14px;
-        }
-        
-        .form-group input {
-            width: 100%;
-            padding: 14px 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s;
-        }
-        
-        .form-group input:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
-        }
-        
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 14px;
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: center;
-            margin-bottom: 15px;
-        }
-        
-        .btn:hover {
-            background-color: var(--secondary);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-        }
-        
-        .btn:active {
-            transform: translateY(0);
-        }
-        
-        .btn-google {
-            background-color: #db4437;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .btn-google:hover {
-            background-color: #c03a2e;
-        }
-        
-        .btn i {
-            margin-right: 10px;
-        }
-        
-        .divider {
-            display: flex;
-            align-items: center;
-            margin: 25px 0;
-            color: var(--gray);
-        }
-        
-        .divider::before,
-        .divider::after {
-            content: "";
-            flex: 1;
-            height: 1px;
-            background-color: #ddd;
-        }
-        
-        .divider span {
-            padding: 0 15px;
-            font-size: 14px;
-        }
-        
-        .alert {
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-        }
-        
-        .alert-error {
-            background-color: #ffebee;
-            color: #c62828;
-            border: 1px solid #ef9a9a;
-        }
-        
-        .alert-success {
-            background-color: #e8f5e9;
-            color: #2e7d32;
-            border: 1px solid #a5d6a7;
-        }
-        
-        .alert i {
-            margin-right: 10px;
-        }
-        
-        .user-type {
-            display: flex;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid #ddd;
-        }
-        
-        .user-type-btn {
-            flex: 1;
-            padding: 12px;
-            text-align: center;
-            background-color: #f8f9fa;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 500;
-        }
-        
-        .user-type-btn.active {
-            background-color: var(--primary);
-            color: white;
-        }
-        
-        .admin-panel {
-            display: none;
-            margin-top: 25px;
-            padding-top: 25px;
-            border-top: 1px solid #eee;
-        }
-        
-        .admin-panel h3 {
-            margin-bottom: 15px;
-            color: var(--dark);
-            font-size: 18px;
-        }
-        
-        .staff-list {
-            max-height: 250px;
-            overflow-y: auto;
-            margin-top: 10px;
-            border: 1px solid #eee;
-            border-radius: 8px;
-            padding: 10px;
-        }
-        
-        .staff-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .staff-item:last-child {
-            border-bottom: none;
-        }
-        
-        .staff-info {
-            flex: 1;
-        }
-        
-        .staff-name {
-            font-weight: 500;
-            color: var(--dark);
-        }
-        
-        .staff-email {
-            font-size: 13px;
-            color: var(--gray);
-        }
-        
-        .delete-btn {
-            color: var(--danger);
-            cursor: pointer;
-            background: none;
-            border: none;
-            font-size: 16px;
-            padding: 5px 10px;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-        
-        .delete-btn:hover {
-            background-color: #ffebee;
-        }
-        
-        .footer {
-            text-align: center;
-            color: var(--gray);
-            font-size: 14px;
-            margin-top: 20px;
-        }
-        
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 15px;
-        }
-        
-        .loading-spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--primary);
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-        
-        .dashboard {
-            display: none;
-            background-color: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            width: 100%;
-            max-width: 800px;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-        
-        .dashboard-header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .user-info {
-            display: flex;
-            align-items: center;
-        }
-        
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 10px;
-            font-size: 20px;
-        }
-        
-        .logout-btn {
-            background-color: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        
-        .logout-btn:hover {
-            background-color: rgba(255, 255, 255, 0.3);
-        }
-        
-        .dashboard-content {
-            padding: 20px;
-        }
-        
-        .welcome-message {
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            border-left: 4px solid var(--primary);
-        }
-        
-        .security-note {
-            background-color: #fff3cd;
-            border-left: 4px solid #ffc107;
-            color: #856404;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 5px;
-        }
-        
-        @media (max-width: 480px) {
-            .container {
-                border-radius: 10px;
-            }
-            
-            .header {
-                padding: 20px;
-            }
-            
-            .content {
-                padding: 20px;
-            }
-            
-            .btn {
-                padding: 12px;
-            }
-            
-            .dashboard-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .logout-btn {
-                margin-top: 10px;
-            }
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Rafaela Finance</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #4361ee;
+      --secondary: #3a0ca3;
+      --success: #4cc9f0;
+      --danger: #f72585;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --gray: #6c757d;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background:linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:20px; }
+    .container { background:#fff; border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,.15); width:100%; max-width:450px; overflow:hidden; margin-bottom:20px; }
+    .header { background:linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color:#fff; padding:25px; text-align:center; }
+    .header h1 { font-size:28px; margin-bottom:5px; font-weight:600; }
+    .content { padding:25px; }
+    .form-group { margin-bottom:20px; }
+    .form-group label { display:block; margin-bottom:8px; color:var(--dark); font-weight:500; font-size:14px; }
+    .form-group input { width:100%; padding:14px 15px; border:1px solid #ddd; border-radius:8px; font-size:16px; transition:all .3s; }
+    .form-group input:focus { border-color:var(--primary); outline:none; box-shadow:0 0 0 3px rgba(67,97,238,.2); }
+    .btn { display:block; width:100%; padding:14px; background:var(--primary); color:#fff; border:none; border-radius:8px; font-size:16px; font-weight:500; cursor:pointer; transition:all .3s; text-align:center; margin-bottom:15px; }
+    .btn:hover { background:var(--secondary); transform:translateY(-2px); box-shadow:0 4px 10px rgba(0,0,0,.15); }
+    .btn-google { background:#db4437; display:flex; align-items:center; justify-content:center; }
+    .btn-google:hover { background:#c03a2e; }
+    .btn i { margin-right:10px; }
+    .divider { display:flex; align-items:center; margin:25px 0; color:var(--gray); }
+    .divider::before, .divider::after { content:""; flex:1; height:1px; background:#ddd; }
+    .divider span { padding:0 15px; font-size:14px; }
+    .alert { padding:12px 15px; border-radius:8px; margin-bottom:20px; display:flex; align-items:center; }
+    .alert-error { background:#ffebee; color:#c62828; border:1px solid #ef9a9a; }
+    .alert-success { background:#e8f5e9; color:#2e7d32; border:1px solid #a5d6a7; }
+    .user-type { display:flex; margin-bottom:20px; border-radius:8px; overflow:hidden; border:1px solid #ddd; }
+    .user-type-btn { flex:1; padding:12px; text-align:center; background:#f8f9fa; cursor:pointer; transition:all .3s; font-weight:500; }
+    .user-type-btn.active { background:var(--primary); color:#fff; }
+    .dashboard { display:none; background:#fff; border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,.15); width:100%; max-width:800px; overflow:hidden; margin-bottom:20px; }
+    .dashboard-header { background:linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color:#fff; padding:20px; display:flex; justify-content:space-between; align-items:center; }
+    .user-info { display:flex; align-items:center; }
+    .user-avatar { width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,.2); display:flex; align-items:center; justify-content:center; margin-right:10px; font-size:20px; }
+    .logout-btn { background:rgba(255,255,255,.2); color:#fff; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; }
+    .logout-btn:hover { background:rgba(255,255,255,.3); }
+    .welcome-message { margin-bottom:20px; padding:15px; background:#f8f9fa; border-radius:8px; border-left:4px solid var(--primary); }
+    .security-note { background:#fff3cd; border-left:4px solid #ffc107; color:#856404; padding:15px; margin:20px 0; border-radius:5px; }
+    .loading { display:none; text-align:center; padding:15px; }
+    .loading-spinner { border:3px solid #f3f3f3; border-top:3px solid var(--primary); border-radius:50%; width:30px; height:30px; animation:spin 1s linear infinite; margin:0 auto; }
+    @keyframes spin { 0%{transform:rotate(0deg);} 100%{transform:rotate(360deg);} }
+  </style>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-    <div class="container" id="loginContainer">
-        <div class="header">
-            <h1>Rafaela Finance</h1>
-            <p>Sistem Manajemen Keuangan</p>
-        </div>
-        
-        <div class="content">
-            <div class="alert alert-error" id="errorAlert" style="display: none;">
-                <i class="fas fa-exclamation-circle"></i>
-                <span id="errorMessage"></span>
-            </div>
-            
-            <div class="alert alert-success" id="successAlert" style="display: none;">
-                <i class="fas fa-check-circle"></i>
-                <span id="successMessage"></span>
-            </div>
-            
-            <div class="user-type">
-                <div class="user-type-btn active" id="ownerBtn">Owner</div>
-                <div class="user-type-btn" id="staffBtn">Staff</div>
-            </div>
-            
-            <div id="ownerLogin">
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" placeholder="Masukkan username">
-                </div>
-                
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="Masukkan password">
-                </div>
-                
-                <button class="btn" id="loginOwnerBtn">
-                    <i class="fas fa-sign-in-alt"></i>Login sebagai Owner
-                </button>
-            </div>
-            
-            <div id="staffLogin" style="display: none;">
-                <div class="divider">
-                    <span>Login dengan Google</span>
-                </div>
-                
-                <button class="btn btn-google" id="googleLoginBtn">
-                    <i class="fab fa-google"></i>Login dengan Google
-                </button>
-            </div>
-            
-            <div class="admin-panel" id="adminPanel">
-                <h3><i class="fas fa-users"></i> Daftar Staff</h3>
-                <div class="staff-list" id="staffList">
-                    <p style="text-align: center; color: var(--gray);">Memuat data staff...</p>
-                </div>
-            </div>
-            
-            <div class="loading" id="loading">
-                <div class="loading-spinner"></div>
-                <p style="margin-top: 10px;">Memproses...</p>
-            </div>
-        </div>
+  <div class="container" id="loginContainer">
+    <div class="header">
+      <h1>Rafaela Finance</h1>
+      <p>Sistem Manajemen Keuangan</p>
     </div>
-    
-    <div class="dashboard" id="dashboard">
-        <div class="dashboard-header">
-            <div class="user-info">
-                <div class="user-avatar">
-                    <i class="fas fa-user"></i>
-                </div>
-                <div>
-                    <div id="userName">Pengguna</div>
-                    <div id="userRole" style="font-size: 12px; opacity: 0.8;">Role</div>
-                </div>
-            </div>
-            <button class="logout-btn" id="logoutBtn">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </button>
-        </div>
-        
-        <div class="dashboard-content">
-            <div class="welcome-message">
-                <h3>Selamat datang, <span id="welcomeUserName">Pengguna</span>!</h3>
-                <p>Anda login sebagai <span id="welcomeUserRole">role</span> pada sistem Rafaela Finance.</p>
-            </div>
-            
-            <div class="security-note">
-                <h4><i class="fas fa-shield-alt"></i> Penting: Keamanan Database</h4>
-                <p>Aturan keamanan Firebase Anda saat ini bersifat publik. Untuk mengamankan data, silakan update aturan keamanan Firestore di Firebase Console.</p>
-            </div>
-            
-            <div id="ownerDashboard" style="display: none;">
-                <h3><i class="fas fa-users-cog"></i> Manajemen Staff</h3>
-                <div class="staff-list" id="dashboardStaffList">
-                    <p style="text-align: center; color: var(--gray);">Memuat data staff...</p>
-                </div>
-            </div>
-            
-            <div id="staffDashboard" style="display: none;">
-                <h3><i class="fas fa-tasks"></i> Dashboard Staff</h3>
-                <p>Ini adalah dashboard untuk staff. Fitur-fitur khusus staff akan ditampilkan di sini.</p>
-            </div>
-        </div>
-    </div>
+    <div class="content">
+      <div class="alert alert-error" id="errorAlert" style="display:none;"><i class="fas fa-exclamation-circle"></i><span id="errorMessage"></span></div>
+      <div class="alert alert-success" id="successAlert" style="display:none;"><i class="fas fa-check-circle"></i><span id="successMessage"></span></div>
 
-    <div class="footer">
-        <p>© <span id="currentYear">2025</span> Rafaela Print - Sistem Manajemen Keuangan</p>
-    </div>
+      <div class="user-type">
+        <div class="user-type-btn active" id="ownerBtn">Owner</div>
+        <div class="user-type-btn" id="staffBtn">Staff</div>
+      </div>
 
-    <script>
-        // Konfigurasi Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyC57gZNXlJoGvTKnTCgCfspMC_qPgkLvtU",
-            authDomain: "rafaela-finance.firebaseapp.com",
-            projectId: "rafaela-finance",
-            storageBucket: "rafaela-finance.firebasestorage.app",
-            messagingSenderId: "45081143872",
-            appId: "1:45081143872:web:91d15b2732c24178ee0da5",
-            measurementId: "G-XM0GEZY4PK"
-        };
-        
-        // URL Google Apps Script
-        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbypE91GI7Bdtn-KOGUVaygzZN7QnQyz9rvSOlYL5mRNDWYlWUpdQIB5gRKgiMjquW6tgQ/exec';
-        
-        // Inisialisasi Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-        
-        // Elemen UI
-        const loginContainer = document.getElementById('loginContainer');
-        const dashboard = document.getElementById('dashboard');
-        const ownerBtn = document.getElementById('ownerBtn');
-        const staffBtn = document.getElementById('staffBtn');
-        const ownerLogin = document.getElementById('ownerLogin');
-        const staffLogin = document.getElementById('staffLogin');
-        const usernameInput = document.getElementById('username');
-        const passwordInput = document.getElementById('password');
-        const loginOwnerBtn = document.getElementById('loginOwnerBtn');
-        const googleLoginBtn = document.getElementById('googleLoginBtn');
-        const errorAlert = document.getElementById('errorAlert');
-        const errorMessage = document.getElementById('errorMessage');
-        const successAlert = document.getElementById('successAlert');
-        const successMessage = document.getElementById('successMessage');
-        const adminPanel = document.getElementById('adminPanel');
-        const staffList = document.getElementById('staffList');
-        const loading = document.getElementById('loading');
-        const userName = document.getElementById('userName');
-        const userRole = document.getElementById('userRole');
-        const welcomeUserName = document.getElementById('welcomeUserName');
-        const welcomeUserRole = document.getElementById('welcomeUserRole');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const ownerDashboard = document.getElementById('ownerDashboard');
-        const staffDashboard = document.getElementById('staffDashboard');
-        const dashboardStaffList = document.getElementById('dashboardStaffList');
-        const currentYear = document.getElementById('currentYear');
-        
-        // Set tahun saat ini di footer
-        currentYear.textContent = new Date().getFullYear();
-        
-        // Variabel global
-        let currentUser = null;
-        
-        // Toggle antara login owner dan staff
-        ownerBtn.addEventListener('click', () => {
-            ownerBtn.classList.add('active');
-            staffBtn.classList.remove('active');
-            ownerLogin.style.display = 'block';
-            staffLogin.style.display = 'none';
-        });
-        
-        staffBtn.addEventListener('click', () => {
-            staffBtn.classList.add('active');
-            ownerBtn.classList.remove('active');
-            staffLogin.style.display = 'block';
-            ownerLogin.style.display = 'none';
-        });
-        
-        // Login sebagai owner
-        loginOwnerBtn.addEventListener('click', () => {
-            const username = usernameInput.value;
-            const password = passwordInput.value;
-            
-            if (username === 'Rafaela' && password === 'Daniarku19') {
-                showSuccess('Login berhasil!');
-                hideError();
-                
-                // Simpan informasi user
-                currentUser = {
-                    name: 'Rafaela',
-                    role: 'owner',
-                    email: 'arinkumanja76@gmail.com'
-                };
-                
-                // Tampilkan dashboard
-                showDashboard();
-                
-                // Catat aktivitas login
-                logActivity('LOGIN', 'Owner login ke sistem');
-            } else {
-                showError('Username atau password salah!');
-                hideSuccess();
-            }
-        });
-        
-        // Login dengan Google untuk staff
-        googleLoginBtn.addEventListener('click', () => {
-            showLoading();
-            
-            const provider = new firebase.auth.GoogleAuthProvider();
-            
-            auth.signInWithPopup(provider)
-                .then((result) => {
-                    // Login berhasil
-                    const user = result.user;
-                    currentUser = {
-                        name: user.displayName,
-                        role: 'staff',
-                        email: user.email,
-                        uid: user.uid
-                    };
-                    
-                    hideLoading();
-                    showSuccess(`Login berhasil sebagai ${user.displayName}`);
-                    hideError();
-                    
-                    // Tampilkan dashboard
-                    showDashboard();
-                    
-                    // Simpan data staff ke Firestore jika belum ada
-                    saveStaffAccount(user);
-                    
-                    // Catat aktivitas login
-                    logActivity('LOGIN', 'Staff login ke sistem dengan Google');
-                })
-                .catch((error) => {
-                    hideLoading();
-                    showError(`Error: ${error.message}`);
-                    hideSuccess();
-                });
-        });
-        
-        // Simpan akun staff ke Firestore
-        function saveStaffAccount(user) {
-            // Atur aturan keamanan Firestore untuk mengizinkan penulisan
-            db.collection('staff').doc(user.uid).set({
-                name: user.displayName,
-                email: user.email,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                role: 'staff'
-            }, { merge: true })
-            .then(() => {
-                console.log('Data staff berhasil disimpan');
-            })
-            .catch((error) => {
-                console.error('Error menyimpan data staff: ', error);
-                showError('Error menyimpan data staff. Pastikan aturan keamanan Firestore sudah diatur dengan benar.');
-            });
-        }
-        
-        // Muat daftar akun staff
-        function loadStaffAccounts() {
-            staffList.innerHTML = '<p style="text-align: center; color: var(--gray);">Memuat data staff...</p>';
-            dashboardStaffList.innerHTML = '<p style="text-align: center; color: var(--gray);">Memuat data staff...</p>';
-            
-            // Atur aturan keamanan Firestore untuk mengizinkan pembacaan
-            db.collection('staff').get()
-                .then((querySnapshot) => {
-                    staffList.innerHTML = '';
-                    dashboardStaffList.innerHTML = '';
-                    
-                    if (querySnapshot.empty) {
-                        staffList.innerHTML = '<p style="text-align: center; color: var(--gray);">Tidak ada staff terdaftar.</p>';
-                        dashboardStaffList.innerHTML = '<p style="text-align: center; color: var(--gray);">Tidak ada staff terdaftar.</p>';
-                        return;
-                    }
-                    
-                    querySnapshot.forEach((doc) => {
-                        const staffData = doc.data();
-                        const staffItem = document.createElement('div');
-                        staffItem.className = 'staff-item';
-                        staffItem.innerHTML = `
-                            <div class="staff-info">
-                                <div class="staff-name">${staffData.name}</div>
-                                <div class="staff-email">${staffData.email}</div>
-                            </div>
-                            <button class="delete-btn" data-id="${doc.id}">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        `;
-                        staffList.appendChild(staffItem.cloneNode(true));
-                        dashboardStaffList.appendChild(staffItem);
-                    });
-                    
-                    // Tambahkan event listener untuk tombol hapus
-                    const deleteButtons = document.querySelectorAll('.delete-btn');
-                    deleteButtons.forEach(button => {
-                        button.addEventListener('click', (e) => {
-                            const staffId = e.currentTarget.getAttribute('data-id');
-                            deleteStaffAccount(staffId);
-                        });
-                    });
-                })
-                .catch((error) => {
-                    const errorMsg = `Error memuat data: ${error.message}. Pastikan aturan keamanan Firestore sudah diatur dengan benar.`;
-                    staffList.innerHTML = `<p style="text-align: center; color: var(--danger);">${errorMsg}</p>`;
-                    dashboardStaffList.innerHTML = `<p style="text-align: center; color: var(--danger);">${errorMsg}</p>`;
-                });
-        }
-        
-        // Hapus akun staff
-        function deleteStaffAccount(staffId) {
-            if (confirm('Apakah Anda yakin ingin menghapus akun staff ini?')) {
-                showLoading();
-                
-                // Atur aturan keamanan Firestore untuk mengizinkan penghapusan
-                db.collection('staff').doc(staffId).delete()
-                    .then(() => {
-                        hideLoading();
-                        showSuccess('Akun staff berhasil dihapus');
-                        loadStaffAccounts();
-                        
-                        // Catat aktivitas penghapusan
-                        logActivity('DELETE_STAFF', `Menghapus akun staff dengan ID: ${staffId}`);
-                    })
-                    .catch((error) => {
-                        hideLoading();
-                        showError(`Error menghapus akun: ${error.message}. Pastikan aturan keamanan Firestore sudah diatur dengan benar.`);
-                    });
-            }
-        }
-        
-        // Tampilkan dashboard setelah login berhasil
-        function showDashboard() {
-            loginContainer.style.display = 'none';
-            dashboard.style.display = 'block';
-            
-            // Update informasi pengguna di dashboard
-            userName.textContent = currentUser.name;
-            userRole.textContent = currentUser.role === 'owner' ? 'Pemilik Sistem' : 'Staf';
-            welcomeUserName.textContent = currentUser.name;
-            welcomeUserRole.textContent = currentUser.role === 'owner' ? 'Pemilik' : 'Staf';
-            
-            // Tampilkan panel yang sesuai berdasarkan peran pengguna
-            if (currentUser.role === 'owner') {
-                ownerDashboard.style.display = 'block';
-                staffDashboard.style.display = 'none';
-                loadStaffAccounts();
-            } else {
-                ownerDashboard.style.display = 'none';
-                staffDashboard.style.display = 'block';
-            }
-        }
-        
-        // Logout
-        logoutBtn.addEventListener('click', () => {
-            auth.signOut().then(() => {
-                // Kembali ke halaman login
-                dashboard.style.display = 'none';
-                loginContainer.style.display = 'block';
-                
-                // Reset form
-                usernameInput.value = '';
-                passwordInput.value = '';
-                
-                // Catat aktivitas logout
-                if (currentUser) {
-                    logActivity('LOGOUT', `${currentUser.name} logout dari sistem`);
-                }
-                
-                currentUser = null;
-            }).catch((error) => {
-                showError(`Error saat logout: ${error.message}`);
-            });
-        });
-        
-        // Catat aktivitas ke Google Sheets
-        function logActivity(action, details) {
-            if (!currentUser) return;
-            
-            const data = {
-                user: currentUser.name,
-                role: currentUser.role,
-                action: action,
-                details: details,
-                timestamp: new Date().toISOString()
+      <div id="ownerLogin">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" placeholder="Masukkan username">
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Masukkan password">
+        </div>
+        <button class="btn" id="loginOwnerBtn"><i class="fas fa-sign-in-alt"></i> Login sebagai Owner</button>
+      </div>
+
+      <div id="staffLogin" style="display:none;">
+        <div class="divider"><span>Login dengan Google</span></div>
+        <button class="btn btn-google" id="googleLoginBtn"><i class="fab fa-google"></i>Login dengan Google</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard" id="dashboard">
+    <div class="dashboard-header">
+      <div class="user-info">
+        <div class="user-avatar"><i class="fas fa-user"></i></div>
+        <div>
+          <div id="userName">Pengguna</div>
+          <div id="userRole" style="font-size:12px; opacity:.8;">Role</div>
+        </div>
+      </div>
+      <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+    <div class="dashboard-content">
+      <div class="welcome-message">
+        <h3>Selamat datang, <span id="welcomeUserName">Pengguna</span>!</h3>
+        <p>Anda login sebagai <span id="welcomeUserRole">role</span> pada sistem Rafaela Finance.</p>
+      </div>
+      <div class="security-note">
+        <h4><i class="fas fa-shield-alt"></i> Penting: Keamanan Database</h4>
+        <p>Aturan keamanan Firebase Anda saat ini bersifat publik. Untuk mengamankan data, silakan update aturan keamanan Firestore di Firebase Console.</p>
+      </div>
+      <div id="ownerDashboard" style="display:none;">
+        <h3><i class="fas fa-users-cog"></i> Manajemen Staff</h3>
+        <div class="staff-list" id="dashboardStaffList"><p style="text-align:center; color:var(--gray);">Memuat data staff...</p></div>
+      </div>
+      <div id="staffDashboard" style="display:none;">
+        <h3><i class="fas fa-tasks"></i> Dashboard Staff</h3>
+        <p>Ini adalah dashboard untuk staff.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer"><p>© <span id="currentYear">2025</span> Rafaela Print - Sistem Manajemen Keuangan</p></div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyC57gZNXlJoGvTKnTCgCfspMC_qPgkLvtU",
+      authDomain: "rafaela-finance.firebaseapp.com",
+      projectId: "rafaela-finance",
+      storageBucket: "rafaela-finance.firebasestorage.app",
+      messagingSenderId: "45081143872",
+      appId: "1:45081143872:web:91d15b2732c24178ee0da5",
+      measurementId: "G-XM0GEZY4PK"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const loginContainer = document.getElementById('loginContainer');
+    const dashboard = document.getElementById('dashboard');
+    const ownerBtn = document.getElementById('ownerBtn');
+    const staffBtn = document.getElementById('staffBtn');
+    const ownerLogin = document.getElementById('ownerLogin');
+    const staffLogin = document.getElementById('staffLogin');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const loginOwnerBtn = document.getElementById('loginOwnerBtn');
+    const googleLoginBtn = document.getElementById('googleLoginBtn');
+    const errorAlert = document.getElementById('errorAlert');
+    const errorMessage = document.getElementById('errorMessage');
+    const successAlert = document.getElementById('successAlert');
+    const successMessage = document.getElementById('successMessage');
+    const userName = document.getElementById('userName');
+    const userRole = document.getElementById('userRole');
+    const welcomeUserName = document.getElementById('welcomeUserName');
+    const welcomeUserRole = document.getElementById('welcomeUserRole');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const ownerDashboard = document.getElementById('ownerDashboard');
+    const staffDashboard = document.getElementById('staffDashboard');
+    const dashboardStaffList = document.getElementById('dashboardStaffList');
+    const currentYear = document.getElementById('currentYear');
+
+    currentYear.textContent = new Date().getFullYear();
+
+    let currentUser = null;
+
+    ownerBtn.addEventListener('click', () => {
+      ownerBtn.classList.add('active');
+      staffBtn.classList.remove('active');
+      ownerLogin.style.display = 'block';
+      staffLogin.style.display = 'none';
+    });
+
+    staffBtn.addEventListener('click', () => {
+      staffBtn.classList.add('active');
+      ownerBtn.classList.remove('active');
+      staffLogin.style.display = 'block';
+      ownerLogin.style.display = 'none';
+    });
+
+    // 🔑 Login Owner (connect ke Firebase)
+    loginOwnerBtn.addEventListener('click', () => {
+      const username = usernameInput.value;
+      const password = passwordInput.value;
+      if (username === 'Rafaela' && password === 'Daniarku19') {
+        auth.signInAnonymously()
+          .then(() => {
+            currentUser = {
+              name: 'Rafaela',
+              role: 'owner',
+              email: 'arinkumanja76@gmail.com',
+              uid: "N755UkVPGUXaDdYNCQ10rSBUbYi2" // atau ganti ke GAfTnHx... jika ingin
             };
-            
-            fetch(WEB_APP_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            })
-            .then(() => {
-                console.log('Aktivitas berhasil dicatat');
-            })
-            .catch((error) => {
-                console.error('Error mencatat aktivitas: ', error);
-            });
-        }
-        
-        // Helper functions untuk UI
-        function showError(message) {
-            errorMessage.textContent = message;
-            errorAlert.style.display = 'flex';
-        }
-        
-        function hideError() {
-            errorAlert.style.display = 'none';
-        }
-        
-        function showSuccess(message) {
-            successMessage.textContent = message;
-            successAlert.style.display = 'flex';
-            setTimeout(() => {
-                hideSuccess();
-            }, 5000);
-        }
-        
-        function hideSuccess() {
-            successAlert.style.display = 'none';
-        }
-        
-        function showLoading() {
-            loading.style.display = 'block';
-        }
-        
-        function hideLoading() {
-            loading.style.display = 'none';
-        }
-        
-        // Cek status login saat halaman dimuat
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                // User sudah login
-                currentUser = {
-                    name: user.displayName,
-                    role: 'staff',
-                    email: user.email,
-                    uid: user.uid
-                };
-                
-                showDashboard();
-            }
-        });
-        
-        // Focus pada username field saat halaman dimuat
-        window.onload = function() {
-            usernameInput.focus();
-        };
-    </script>
+            showSuccess('Login Owner berhasil!');
+            showDashboard();
+          })
+          .catch(err => showError("Error login owner: " + err.message));
+      } else {
+        showError('Username atau password salah!');
+      }
+    });
+
+    // 🔑 Login Staff
+    googleLoginBtn.addEventListener('click', () => {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider)
+        .then((result) => {
+          const user = result.user;
+          currentUser = {
+            name: user.displayName,
+            role: 'staff',
+            email: user.email,
+            uid: user.uid
+          };
+          showSuccess(`Login berhasil sebagai ${user.displayName}`);
+          showDashboard();
+        })
+        .catch(err => showError("Error: " + err.message));
+    });
+
+    function showDashboard() {
+      loginContainer.style.display = 'none';
+      dashboard.style.display = 'block';
+      userName.textContent = currentUser.name;
+      userRole.textContent = currentUser.role === 'owner' ? 'Pemilik Sistem' : 'Staf';
+      welcomeUserName.textContent = currentUser.name;
+      welcomeUserRole.textContent = currentUser.role === 'owner' ? 'Pemilik' : 'Staf';
+      if (currentUser.role === 'owner') {
+        ownerDashboard.style.display = 'block';
+        staffDashboard.style.display = 'none';
+      } else {
+        ownerDashboard.style.display = 'none';
+        staffDashboard.style.display = 'block';
+      }
+    }
+
+    logoutBtn.addEventListener('click', () => {
+      auth.signOut().then(() => {
+        dashboard.style.display = 'none';
+        loginContainer.style.display = 'block';
+        currentUser = null;
+      });
+    });
+
+    function showError(msg){ errorMessage.textContent=msg; errorAlert.style.display='flex'; }
+    function showSuccess(msg){ successMessage.textContent=msg; successAlert.style.display='flex'; setTimeout(()=>successAlert.style.display='none',3000);}
+  </script>
 </body>
 </html>
