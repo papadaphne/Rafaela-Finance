@@ -184,8 +184,7 @@ async function addTransaction(transaction) {
         showNotification("Transaksi berhasil disimpan!", "success");
         loadTransactions();
     } catch (error) {
-error_code: 500, error_message: "An internal error occurred. If this error persists, please contact support."
-    console.error("Error adding transaction:", error);
+        console.error("Error adding transaction:", error);
         showNotification("Gagal menyimpan transaksi.", "error");
     }
 }
