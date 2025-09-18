@@ -1,12 +1,12 @@
-// Konfigurasi Firebase Anda (Ganti dengan konfigurasi Anda sendiri)
+// Konfigurasi Firebase Anda (Telah diperbarui dengan kredensial Anda)
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID",
-    measurementId: "YOUR_MEASUREMENT_ID"
+    apiKey: "AIzaSyC57gZNXlJoGvTKnTCgCfspMC_qPgkLvtU",
+    authDomain: "rafaela-finance.firebaseapp.com",
+    projectId: "rafaela-finance",
+    storageBucket: "rafaela-finance.firebasestorage.app",
+    messagingSenderId: "45081143872",
+    appId: "1:45081143872:web:91d15b2732c24178ee0da5",
+    measurementId: "G-XM0GEZY4PK"
 };
 
 // Inisialisasi Firebase
@@ -184,7 +184,8 @@ async function addTransaction(transaction) {
         showNotification("Transaksi berhasil disimpan!", "success");
         loadTransactions();
     } catch (error) {
-        console.error("Error adding transaction:", error);
+error_code: 500, error_message: "An internal error occurred. If this error persists, please contact support."
+    console.error("Error adding transaction:", error);
         showNotification("Gagal menyimpan transaksi.", "error");
     }
 }
