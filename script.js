@@ -20,12 +20,26 @@ let userId;
 // Kategori Transaksi
 const categories = {
     income: [
-        "Penjualan", "Gaji", "Investasi", "Hadiah", "Lainnya"
+        "Laba dari Order",
+        "Tambahan Modal / Modal Masuk",
+        "Lainnya"
     ],
     expense: [
-        "Bahan Baku", "Gaji Karyawan", "Sewa", "Transportasi", "Peralatan", "Pemasaran", "Lainnya"
+        "HPP",
+        "Biaya Listrik",
+        "Wifi",
+        "Sewa",
+        "Gaji Karyawan",
+        "Beli Kertas",
+        "Pemasaran",
+        "Transportasi",
+        "Peralatan",
+        "Lainnya"
     ]
 };
+
+// Target Omset Tahunan (Anda dapat mengubahnya)
+const TARGET_OMSET = 50000000; 
 
 // State Aplikasi
 let transactions = [];
@@ -91,7 +105,6 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
         const userCredential = await auth.createUserWithEmailAndPassword(email, password);
         const user = userCredential.user;
 
-        // Set role based on email
         const role = email === 'arialmedia.official@gmail.com' ? 'Owner' : 'Pengguna';
 
         await db.collection("users").doc(user.uid).set({
@@ -116,7 +129,6 @@ auth.onAuthStateChanged(async (user) => {
         document.getElementById('register-screen').classList.add('hidden');
         document.getElementById('app-container').classList.remove('hidden');
 
-        // Fetch user data from Firestore to get name and role
         const userDoc = await db.collection("users").doc(userId).get();
         if (userDoc.exists) {
             const userData = userDoc.data();
@@ -125,18 +137,14 @@ auth.onAuthStateChanged(async (user) => {
             document.getElementById('user-role-display').textContent = userData.role || 'Pengguna';
             document.getElementById('user-avatar').textContent = (userData.name || user.email).charAt(0).toUpperCase();
 
-            // Example of role-based visibility
             if (userData.role !== 'Owner') {
-                // Hide or disable elements only for non-owner users
                 document.getElementById('karyawan-view').classList.add('hidden');
                 document.querySelector('a[onclick="showView(\'karyawan\')"]').style.display = 'none';
             }
         }
 
-        // Load data from Firebase
         loadTransactions();
 
-        // Cek jika ada data di localStorage, migrasikan ke Firebase
         const localTransactions = JSON.parse(localStorage.getItem('transactions') || '[]');
         if (localTransactions.length > 0) {
             alert('Mendeteksi data lokal. Memigrasikan data ke database Anda...');
@@ -275,11 +283,26 @@ function renderAll() {
 function renderDashboard() {
     const totalPemasukan = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
     const totalPengeluaran = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
-    const labaBersih = totalPemasukan - totalPengeluaran;
+
+    const omset = transactions.filter(t => t.category === 'Laba dari Order').reduce((sum, t) => sum + t.amount, 0);
+    const hpp = transactions.filter(t => t.category === 'HPP').reduce((sum, t) => sum + t.amount, 0);
+    const labaKotor = omset - hpp;
     
+    const operationalExpenses = totalPengeluaran - hpp;
+    const labaBersih = labaKotor - operationalExpenses;
+
     document.getElementById('total-pemasukan').textContent = formatRupiah(totalPemasukan);
     document.getElementById('total-pengeluaran').textContent = formatRupiah(totalPengeluaran);
-    document.getElementById('laba-bersih').textContent = formatRupiah(labaBersih);
+    document.getElementById('omset-display').textContent = formatRupiah(omset);
+    document.getElementById('hpp-display').textContent = formatRupiah(hpp);
+    document.getElementById('laba-kotor-display').textContent = formatRupiah(labaKotor);
+    document.getElementById('pengeluaran-operasional-display').textContent = formatRupiah(operationalExpenses);
+    document.getElementById('laba-bersih-display').textContent = formatRupiah(labaBersih);
+
+    // Hitung dan tampilkan progress bar
+    const progress = Math.min(100, (omset / TARGET_OMSET) * 100);
+    document.getElementById('omset-progress-bar').style.width = `${progress}%`;
+    document.getElementById('omset-progress-text').textContent = `${progress.toFixed(1)}%`;
 
     renderChart();
     renderRecentTransactions();
@@ -318,7 +341,7 @@ function renderTransactionsTable() {
 function renderRecentTransactions() {
     const list = document.getElementById('transaksi-terbaru-list');
     list.innerHTML = '';
-    const recent = transactions.slice(0, 5); // Tampilkan 5 transaksi terbaru
+    const recent = transactions.slice(0, 5);
     if (recent.length === 0) {
         list.innerHTML = `<div class="empty-state text-center text-gray-500"><p>Tidak ada transaksi terbaru.</p></div>`;
         return;
@@ -355,7 +378,11 @@ function renderChart() {
         if (!monthlySummary[month]) {
             monthlySummary[month] = { income: 0, expense: 0 };
         }
-        monthlySummary[month][t.type] += t.amount;
+        if (t.type === 'income') {
+            monthlySummary[month].income += t.amount;
+        } else {
+            monthlySummary[month].expense += t.amount;
+        }
     });
 
     const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
@@ -428,10 +455,10 @@ function filterTransactions() {
         filteredTransactions = filteredTransactions.filter(t => new Date(t.date).getFullYear() === parseInt(yearFilter));
     }
     if (typeFilter !== 'semua') {
-        filteredTransactions = filteredTransactions.filter(t => t.type === typeFilter);
+    filteredTransactions = filteredTransactions.filter(t => t.type === typeFilter);
     }
     if (categoryFilter !== 'semua') {
-        filteredTransactions = filteredTransactions.filter(t => t.category === categoryFilter);
+    filteredTransactions = filteredTransactions.filter(t => t.category === categoryFilter);
     }
     return filteredTransactions;
 }
@@ -489,9 +516,6 @@ document.getElementById('export-csv-btn').addEventListener('click', () => {
 });
 
 document.getElementById('export-pdf-btn').addEventListener('click', async () => {
-    // Implementasi pembuatan PDF dari 17sept1855.html
-    // Untuk fitur ini, Anda perlu memiliki template laporan di halaman
-    // Karena template laporan belum ada, ini adalah contoh untuk invoice
     const invoiceTemplate = document.getElementById('invoice-template');
     invoiceTemplate.style.display = 'block';
 
