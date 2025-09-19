@@ -1,20 +1,20 @@
-
 {
-  "name": "Rafaela Print - Aplikasi Manajemen",
-  "short_name": "RafaelaPrint",
-  "start_url": ".",
+  "name": "Rafaela Finance",
+  "short_name": "RafaelaFinance",
+  "description": "Aplikasi manajemen keuangan untuk bisnis kecil",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#1f2937",
-  "description": "Aplikasi untuk mengelola bisnis Rafaela Print.",
+  "background_color": "#4361ee",
+  "theme_color": "#4361ee",
+  "orientation": "portrait",
   "icons": [
     {
-      "src": "rafaela_logo_mono.png",
+      "src": "https://github.com/papadaphne/Rafaela-Finance/raw/main/logo-rafaela.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "rafaela_logo_mono.png",
+      "src": "https://github.com/papadaphne/Rafaela-Finance/raw/main/logo-rafaela.png",
       "sizes": "512x512",
       "type": "image/png"
     }
