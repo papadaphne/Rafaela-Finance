@@ -3,16 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rafaela Finance - Aplikasi Manajemen Keuangan</title>
+    <title>Rafaela System - Aplikasi Terintegrasi</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
-    <link rel="manifest" href="manifest.webmanifest">
-    <link rel="icon" href="https://github.com/papadaphne/Rafaela-Finance/raw/main/logo-rafaela.png">
-    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
         :root {
             --primary: #4361ee;
             --secondary: #3a0ca3;
@@ -23,196 +21,42 @@
             --light: #f8f9fa;
             --dark: #212529;
         }
-        
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f5f7fb 0%, #e4e9f2 100%);
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f7fb;
             margin: 0;
             padding: 0;
-            min-height: 100vh;
         }
-        
+
         .card {
             transition: all 0.3s ease;
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            background: white;
         }
-        
+
         .card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
-        
-        .stat-card {
-            display: flex;
-            align-items: center;
-            padding: 1.5rem;
-        }
-        
-        .stat-icon {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 60px;
-            height: 60px;
-            border-radius: 12px;
-            margin-right: 1rem;
-            font-size: 1.5rem;
-        }
-        
-        .stat-content {
-            flex: 1;
-        }
-        
-        .stat-value {
-            font-size: 1.8rem;
-            font-weight: bold;
-            margin: 0.25rem 0;
-        }
-        
-        .stat-label {
-            color: #718096;
-            font-size: 0.9rem;
-        }
-        
-        .progress-bar {
-            height: 8px;
-            border-radius: 4px;
-            background: #e2e8f0;
-            overflow: hidden;
-            margin-top: 0.5rem;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            border-radius: 4px;
-            transition: width 0.5s ease;
-        }
-        
-        .recent-activity {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        
-        .recent-activity li {
-            padding: 1rem 0;
-            border-bottom: 1px solid #edf2f7;
-            display: flex;
-            align-items: center;
-        }
-        
-        .recent-activity li:last-child {
-            border-bottom: none;
-        }
-        
-        .activity-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 1rem;
-            font-size: 1rem;
-        }
-        
-        .activity-content {
-            flex: 1;
-        }
-        
-        .activity-title {
-            font-weight: 500;
-            margin-bottom: 0.25rem;
-        }
-        
-        .activity-time {
-            color: #718096;
-            font-size: 0.85rem;
-        }
-        
-        .section-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            color: #2d3748;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .view-all {
-            color: var(--primary);
-            font-size: 0.9rem;
-            text-decoration: none;
-            font-weight: 500;
-        }
-        
-        .chart-container {
-            position: relative;
-            height: 300px;
-        }
-        
-        .nav-item {
-            display: flex;
-            align-items: center;
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            color: #4a5568;
+
+        .sidebar {
+            width: 250px;
             transition: all 0.3s ease;
         }
-        
-        .nav-item:hover {
-            background-color: #4361ee;
-            color: white;
-        }
-        
-        .nav-item.active {
-            background-color: #4361ee;
-            color: white;
-        }
-        
-        .login-container {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        }
-        
-        .logo {
-            font-weight: 800;
-            font-size: 2rem;
-            background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            font-weight: 600;
+
+        .main-content {
             transition: all 0.3s ease;
         }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(67, 97, 238, 0.3);
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            transition: all 0.3s ease;
         }
-        
-        @media (max-width: 768px) {
-            .stat-value {
-                font-size: 1.5rem;
-            }
-            
-            .stat-icon {
-                width: 50px;
-                height: 50px;
-                font-size: 1.2rem;
-            }
-        }
-        
+
         .type-badge {
             display: inline-block;
             padding: 4px 10px;
@@ -220,17 +64,71 @@
             font-size: 0.85rem;
             font-weight: 500;
         }
-        
+
         .type-income {
             background-color: rgba(76, 201, 164, 0.15);
             color: #4cc9a4;
         }
-        
+
         .type-expense {
             background-color: rgba(247, 37, 133, 0.15);
             color: #f72585;
         }
-        
+
+        .type-modal {
+            background-color: rgba(67, 97, 238, 0.15);
+            color: #4361ee;
+        }
+
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 9999;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .splash-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                z-index: 100;
+                height: 100vh;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 99;
+            }
+
+            .overlay.open {
+                display: block;
+            }
+        }
+
+        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -239,376 +137,339 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
             overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            justify-content: center;
+            align-items: center;
         }
-        
+
         .modal-content {
-            background-color: white;
-            margin: 5% auto;
-            padding: 20px;
+            background-color: #fefefe;
+            padding: 24px;
             border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             width: 90%;
-            max-width: 600px;
+            max-width: 500px;
+            position: relative;
         }
         
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #ddd;
-            border-radius: 0.375rem;
-            box-sizing: border-box;
-        }
-        
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 0.375rem;
-            cursor: pointer;
-            font-weight: 500;
-        }
-        
-        .btn-success {
-            background-color: var(--success);
-            color: white;
-        }
-        
-        .btn-danger {
-            background-color: var(--danger);
-            color: white;
-        }
-        
-        .transaction-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 1rem;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .transaction-item:last-child {
-            border-bottom: none;
-        }
-        
-        .hidden {
+        /* Invoice Print */
+        .invoice-print-container {
             display: none;
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            margin: 0 auto;
+            background: #fff;
+            box-shadow: 0 0 5mm rgba(0,0,0,0.1);
         }
     </style>
 </head>
 <body class="bg-gray-100">
-    <!-- Login Screen -->
-    <div id="login-screen" class="min-h-screen flex items-center justify-center p-4">
-        <div class="login-container p-8 w-full max-w-md">
-            <div class="text-center mb-8">
-                <img src="https://github.com/papadaphne/Rafaela-Finance/raw/main/logo-rafaela.png" alt="Rafaela Finance" class="h-20 mx-auto mb-4">
-                <h1 class="text-2xl font-bold text-gray-800">Rafaela Finance</h1>
-                <p class="text-gray-600">Login untuk mengakses sistem manajemen keuangan</p>
-            </div>
-            
-            <form id="login-form">
-                <div class="mb-4">
-                    <label for="email" class="block text-gray-700 text-sm font-medium mb-2">Email</label>
-                    <input type="email" id="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Masukkan email" required>
-                </div>
-                
-                <div class="mb-6">
-                    <label for="password" class="block text-gray-700 text-sm font-medium mb-2">Password</label>
-                    <input type="password" id="password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Masukkan password" required>
-                </div>
-                
-                <button type="submit" class="btn-primary w-full py-3 px-4 rounded-lg font-medium">
-                    <i class="fas fa-sign-in-alt mr-2"></i> Masuk
-                </button>
-               
-                </div>
-            </form>
-        </div>
+
+    <!-- Splash Screen -->
+    <div id="splash-screen" class="splash-screen">
+        <img src="https://placehold.co/150x150/4361ee/ffffff?text=R" alt="Rafaela Print Logo" class="w-28 h-28 mb-4">
+        <h1 class="text-3xl font-bold text-gray-800">Rafaela System</h1>
+        <p class="text-gray-500 mt-2">Loading...</p>
     </div>
 
-    <!-- App Container -->
-    <div id="app-container" class="hidden">
+    <!-- Main Application -->
+    <div id="app-container" class="min-h-screen flex hidden">
+        <!-- Sidebar Overlay for Mobile -->
+        <div id="sidebar-overlay" class="overlay" onclick="toggleSidebar()"></div>
+
         <!-- Sidebar -->
-        <div class="sidebar bg-white w-64 min-h-screen shadow-md fixed hidden md:block">
-            <div class="p-5 border-b border-gray-200">
-                <div class="flex items-center">
-                    <img src="https://github.com/papadaphne/Rafaela-Finance/raw/main/logo-rafaela.png" alt="Rafaela Finance" class="h-8 mr-2">
-                    <div class="logo text-xl">RAFAELA</div>
+        <div id="sidebar" class="sidebar bg-gray-800 text-white h-screen fixed md:relative flex flex-col">
+            <div class="p-5 border-b border-gray-700 flex items-center justify-center">
+                <img src="https://placehold.co/40x40/4361ee/ffffff?text=R" alt="Rafaela Print Logo" class="w-10 h-10 rounded-full mr-3">
+                <div>
+                    <h2 class="font-semibold text-lg">Rafaela System</h2>
                 </div>
             </div>
-            
-            <div class="p-4">
-                <p class="text-xs text-gray-500 uppercase mb-2">Menu Utama</p>
-                <div class="space-y-1">
-                    <a href="#" class="nav-item active" onclick="showView('dashboard')">
-                        <i class="fas fa-tachometer-alt w-5 mr-3 text-center"></i>
-                        Dashboard
+
+            <div class="flex-1 overflow-y-auto py-4">
+                <nav class="space-y-1 px-3">
+                    <a href="#" onclick="showView('dashboard')" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 rounded-lg transition duration-150">
+                        <span class="text-lg mr-3">🏠</span> Dashboard
                     </a>
-                    
-                    <a href="#" class="nav-item" onclick="showView('orders')">
-                        <i class="fas fa-box-open w-5 mr-3 text-center"></i>
-                        Pesanan
+
+                    <a href="#" onclick="showView('pesanan')" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 rounded-lg transition duration-150">
+                        <span class="text-lg mr-3">📦</span> Manajemen Pesanan
                     </a>
-                    
-                    <a href="#" class="nav-item" onclick="showView('transactions')">
-                        <i class="fas fa-exchange-alt w-5 mr-3 text-center"></i>
-                        Transaksi
+
+                    <a href="#" onclick="showView('karyawan')" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 rounded-lg transition duration-150">
+                        <span class="text-lg mr-3">🧑‍💼</span> Manajemen Karyawan
                     </a>
-                    
-                    <a href="#" class="nav-item" onclick="showView('finance')">
-                        <i class="fas fa-money-bill-wave w-5 mr-3 text-center"></i>
-                        Keuangan
-                    </a>
-                    
-                    <a href="#" class="nav-item" onclick="showView('reports')">
-                        <i class="fas fa-chart-pie w-5 mr-3 text-center"></i>
-                        Laporan
-                    </a>
-                </div>
-                
-                <p class="text-xs text-gray-500 uppercase mt-6 mb-2">Akun</p>
-                <div class="space-y-1">
-                    <a href="#" class="nav-item">
-                        <i class="fas fa-cog w-5 mr-3 text-center"></i>
-                        Pengaturan
-                    </a>
-                    
-                    <a href="#" class="nav-item" id="logout-btn">
-                        <i class="fas fa-sign-out-alt w-5 mr-3 text-center"></i>
-                        Keluar
-                    </a>
-                </div>
+
+                    <!-- Menu ini hanya untuk Owner -->
+                    <div id="owner-menu-items">
+                        <a href="#" onclick="showView('keuangan')" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 rounded-lg transition duration-150">
+                            <span class="text-lg mr-3">💰</span> Manajemen Keuangan
+                        </a>
+
+                        <a href="#" onclick="showView('laporan')" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 rounded-lg transition duration-150">
+                            <span class="text-lg mr-3">📈</span> Laporan
+                        </a>
+                    </div>
+                </nav>
             </div>
-            
-            <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
-                <div class="flex items-center">
-                    <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
-                        <span id="user-avatar">O</span>
-                    </div>
-                    <div class="ml-3">
-                        <p class="text-sm font-medium" id="user-name">Owner</p>
-                        <p class="text-xs text-gray-500" id="user-role">Administrator</p>
-                    </div>
-                </div>
+
+            <div class="p-4 border-t border-gray-700">
+                <button onclick="logout()" class="flex items-center w-full px-4 py-3 text-gray-300 hover:bg-gray-700 rounded-lg transition duration-150">
+                    <i class="fas fa-sign-out-alt w-5 mr-3 text-center"></i>
+                    Keluar
+                </button>
             </div>
         </div>
 
         <!-- Main Content -->
-        <div class="main-content md:ml-64">
-            <!-- Mobile Header -->
-            <header class="bg-white shadow-sm md:hidden">
+        <div class="main-content flex-1 md:ml-0">
+            <!-- Header -->
+            <header class="bg-white shadow-sm">
                 <div class="flex items-center justify-between p-4">
                     <div class="flex items-center">
-                        <button id="mobile-menu-btn" class="text-gray-500 focus:outline-none mr-3">
+                        <button onclick="toggleSidebar()" class="md:hidden text-gray-500 focus:outline-none mr-3">
                             <i class="fas fa-bars fa-lg"></i>
                         </button>
-                        <h1 id="page-title" class="text-xl font-bold text-gray-800">Dashboard</h1>
+                        <h1 id="page-title" class="text-2xl font-bold text-gray-800">Dashboard</h1>
                     </div>
-                    
+
                     <div class="flex items-center">
-                        <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
-                            <span id="user-avatar-mobile">O</span>
+                        <div class="flex items-center mr-4">
+                            <span class="text-gray-500 mr-2">Mode:</span>
+                            <button id="toggle-role-btn" class="px-3 py-1 text-sm rounded-full transition-colors duration-200 bg-blue-500 text-white hover:bg-blue-600">Owner</button>
+                        </div>
+                        <div class="mr-4 text-right hidden md:block">
+                            <p class="font-medium" id="user-name-display">Admin Owner</p>
+                            <p class="text-sm text-gray-500" id="user-role-display-header">Owner</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
+                            <span id="user-avatar">O</span>
                         </div>
                     </div>
                 </div>
             </header>
 
-            <!-- Content -->
+            <!-- Content Area -->
             <main class="p-4 md:p-6">
                 <!-- Dashboard View -->
                 <div id="dashboard-view">
-                    <!-- Header Section -->
                     <div class="mb-6">
-                        <h2 class="text-2xl font-bold text-gray-800">Dashboard</h2>
-                        <p class="text-gray-500 mt-1">Selamat datang di Rafaela Finance, berikut ringkasan keuangan Anda.</p>
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <h2 class="text-xl font-semibold text-gray-800">Ringkasan Bisnis</h2>
+                            <select id="filter-bulan-dashboard" onchange="updateDashboard()" class="p-2 border border-gray-300 rounded-lg bg-white shadow-sm">
+                                <option value="semua">Semua Bulan</option>
+                                <option value="01">Januari</option>
+                                <option value="02">Februari</option>
+                                <option value="03">Maret</option>
+                                <option value="04">April</option>
+                                <option value="05">Mei</option>
+                                <option value="06">Juni</option>
+                                <option value="07">Juli</option>
+                                <option value="08">Agustus</option>
+                                <option value="09">September</option>
+                                <option value="10">Oktober</option>
+                                <option value="11">November</option>
+                                <option value="12">Desember</option>
+                            </select>
+                        </div>
+                        <p class="text-gray-500 mt-1">Ringkasan bisnis dan keuangan Anda berdasarkan periode yang dipilih.</p>
                     </div>
-                    
-                    <!-- Stats Grid -->
+
+                    <!-- Ringkasan Keuangan -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <div class="card stat-card">
-                            <div class="stat-icon bg-blue-100 text-blue-500">
-                                <i class="fas fa-box-open"></i>
-                            </div>
-                            <div class="stat-content">
-                                <p class="stat-label">Total Pesanan</p>
-                                <p class="stat-value">42</p>
-                                <div class="progress-bar">
-                                    <div class="progress-fill bg-blue-500" style="width: 75%"></div>
+                        <div class="card bg-white p-6 rounded-xl">
+                            <div class="flex items-center">
+                                <div class="p-3 bg-blue-100 rounded-full">
+                                    <i class="fas fa-box-open text-blue-500 text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-gray-500">Total Pesanan</p>
+                                    <p id="total-pesanan" class="text-2xl font-bold">0</p>
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="card stat-card">
-                            <div class="stat-icon bg-green-100 text-green-500">
-                                <i class="fas fa-dollar-sign"></i>
-                            </div>
-                            <div class="stat-content">
-                                <p class="stat-label">Total Penjualan</p>
-                                <p class="stat-value">Rp 8.250.000</p>
-                                <div class="progress-bar">
-                                    <div class="progress-fill bg-green-500" style="width: 60%"></div>
+
+                        <div class="card bg-white p-6 rounded-xl">
+                            <div class="flex items-center">
+                                <div class="p-3 bg-green-100 rounded-full">
+                                    <i class="fas fa-dollar-sign text-green-500 text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-gray-500">Total Penjualan</p>
+                                    <p id="total-penjualan" class="text-2xl font-bold">Rp 0</p>
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="card stat-card">
-                            <div class="stat-icon bg-red-100 text-red-500">
-                                <i class="fas fa-receipt"></i>
-                            </div>
-                            <div class="stat-content">
-                                <p class="stat-label">Total HPP</p>
-                                <p class="stat-value">Rp 3.120.000</p>
-                                <div class="progress-bar">
-                                    <div class="progress-fill bg-red-500" style="width: 40%"></div>
+
+                        <div class="card bg-white p-6 rounded-xl">
+                            <div class="flex items-center">
+                                <div class="p-3 bg-red-100 rounded-full">
+                                    <i class="fas fa-receipt text-red-500 text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-gray-500">Total HPP</p>
+                                    <p id="total-hpp" class="text-2xl font-bold">Rp 0</p>
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="card stat-card">
-                            <div class="stat-icon bg-yellow-100 text-yellow-500">
-                                <i class="fas fa-money-bill-wave"></i>
-                            </div>
-                            <div class="stat-content">
-                                <p class="stat-label">Laba Kotor</p>
-                                <p class="stat-value">Rp 5.130.000</p>
-                                <div class="progress-bar">
-                                    <div class="progress-fill bg-yellow-500" style="width: 65%"></div>
+
+                        <div class="card bg-white p-6 rounded-xl">
+                            <div class="flex items-center">
+                                <div class="p-3 bg-yellow-100 rounded-full">
+                                    <i class="fas fa-money-bill-wave text-yellow-500 text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-gray-500">Laba Kotor</p>
+                                    <p id="laba-kotor" class="text-2xl font-bold">Rp 0</p>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Finance Dashboard -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                        <div class="card stat-card border-t-4 border-green-500">
-                            <div class="stat-icon bg-green-100 text-green-500">
-                                <i class="fas fa-arrow-down"></i>
+
+                    <!-- Hanya ditampilkan untuk owner -->
+                    <div id="finance-dashboard">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <div class="card bg-white p-6 rounded-xl border-t-4 border-green-500">
+                                <div class="flex items-center">
+                                    <div class="p-3 bg-green-100 rounded-full">
+                                        <i class="fas fa-arrow-down text-green-500 text-xl"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <p class="text-gray-500">Total Pemasukan</p>
+                                        <p id="total-pemasukan" class="text-2xl font-bold">Rp 0</p>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="stat-content">
-                                <p class="stat-label">Total Pemasukan</p>
-                                <p class="stat-value">Rp 12.450.000</p>
+
+                            <div class="card bg-white p-6 rounded-xl border-t-4 border-red-500">
+                                <div class="flex items-center">
+                                    <div class="p-3 bg-red-100 rounded-full">
+                                        <i class="fas fa-arrow-up text-red-500 text-xl"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <p class="text-gray-500">Total Pengeluaran</p>
+                                        <p id="total-pengeluaran" class="text-2xl font-bold">Rp 0</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card bg-white p-6 rounded-xl border-t-4 border-blue-500">
+                                <div class="flex items-center">
+                                    <div class="p-3 bg-blue-100 rounded-full">
+                                        <i class="fas fa-chart-line text-blue-500 text-xl"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <p class="text-gray-500">Laba/Rugi Bersih</p>
+                                        <p id="laba-bersih" class="text-2xl font-bold">Rp 0</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        
-                        <div class="card stat-card border-t-4 border-red-500">
-                            <div class="stat-icon bg-red-100 text-red-500">
-                                <i class="fas fa-arrow-up"></i>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <div class="card bg-white p-6 rounded-xl">
+                                <h2 class="text-xl font-semibold mb-4">Pesanan Terbaru</h2>
+                                <div id="pesanan-terbaru-list" class="space-y-2">
+                                    <p class="text-gray-500">Belum ada pesanan.</p>
+                                </div>
                             </div>
-                            <div class="stat-content">
-                                <p class="stat-label">Total Pengeluaran</p>
-                                <p class="stat-value">Rp 7.320.000</p>
+
+                            <div class="card bg-white p-6 rounded-xl">
+                                <h2 class="text-xl font-semibold mb-4">Grafik Keuangan</h2>
+                                <div class="chart-container" style="position: relative; height: 250px;">
+                                    <canvas id="finance-chart"></canvas>
+                                </div>
                             </div>
-                        </div>
-                        
-                        <div class="card stat-card border-t-4 border-blue-500">
-                            <div class="stat-icon bg-blue-100 text-blue-500">
-                                <i class="fas fa-chart-line"></i>
-                            </div>
-                            <div class="stat-content">
-                                <p class="stat-label">Laba/Rugi Bersih</p>
-                                <p class="stat-value">Rp 5.130.000</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Charts and Recent Activity -->
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div class="card p-6">
-                            <div class="section-title">
-                                <span>Grafik Keuangan</span>
-                                <a href="#" class="view-all">Lihat Detail</a>
-                            </div>
-                            <div class="chart-container">
-                                <canvas id="finance-chart"></canvas>
-                            </div>
-                        </div>
-                        
-                        <div class="card p-6">
-                            <div class="section-title">
-                                <span>Transaksi Terbaru</span>
-                                <a href="#" class="view-all" onclick="showView('transactions')">Lihat Semua</a>
-                            </div>
-                            <ul class="recent-activity" id="recent-transactions">
-                                <li>
-                                    <div class="activity-icon bg-green-100 text-green-500">
-                                        <i class="fas fa-arrow-down"></i>
-                                    </div>
-                                    <div class="activity-content">
-                                        <div class="activity-title">Pembayaran dari Customer A</div>
-                                        <div class="activity-time">2 jam yang lalu</div>
-                                    </div>
-                                    <div class="text-green-500 font-semibold">Rp 450.000</div>
-                                </li>
-                                <li>
-                                    <div class="activity-icon bg-red-100 text-red-500">
-                                        <i class="fas fa-arrow-up"></i>
-                                    </div>
-                                    <div class="activity-content">
-                                        <div class="activity-title">Pembayaran listrik</div>
-                                        <div class="activity-time">5 jam yang lalu</div>
-                                    </div>
-                                    <div class="text-red-500 font-semibold">Rp 320.000</div>
-                                </li>
-                                <li>
-                                    <div class="activity-icon bg-red-100 text-red-500">
-                                        <i class="fas fa-arrow-up"></i>
-                                    </div>
-                                    <div class="activity-content">
-                                        <div class="activity-title">Pembelian kertas</div>
-                                        <div class="activity-time">1 hari yang lalu</div>
-                                    </div>
-                                    <div class="text-red-500 font-semibold">Rp 250.000</div>
-                                </li>
-                                <li>
-                                    <div class="activity-icon bg-green-100 text-green-500">
-                                        <i class="fas fa-arrow-down"></i>
-                                    </div>
-                                    <div class="activity-content">
-                                        <div class="activity-title">Pembayaran dari Customer B</div>
-                                        <div class="activity-time">2 hari yang lalu</div>
-                                    </div>
-                                    <div class="text-green-500 font-semibold">Rp 680.000</div>
-                                </li>
-                            </ul>
                         </div>
                     </div>
                 </div>
 
-                <!-- Transactions View -->
-                <div id="transactions-view" class="hidden">
+                <!-- Pesanan View -->
+                <div id="pesanan-view" class="hidden">
+                    <div class="mb-6">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <h2 class="text-xl font-semibold text-gray-800">Manajemen Pesanan</h2>
+                            <div class="flex items-center gap-4">
+                                <select id="filter-bulan-pesanan" onchange="renderPesananTable()" class="p-2 border border-gray-300 rounded-lg bg-white shadow-sm">
+                                    <option value="semua">Semua Bulan</option>
+                                </select>
+                                <button onclick="openModal('pesanan-modal')" class="bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600 transition-colors">
+                                    <i class="fas fa-plus mr-2"></i>Tambah
+                                </button>
+                            </div>
+                        </div>
+                        <p class="text-gray-500 mt-1">Kelola semua pesanan dan transaksi pelanggan.</p>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                        <table class="w-full text-left">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="p-4">Invoice</th>
+                                    <th class="p-4">Pelanggan</th>
+                                    <th class="p-4">Total Harga</th>
+                                    <th class="p-4">HPP</th>
+                                    <th class="p-4">Status</th>
+                                    <th class="p-4">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pesanan-table-body">
+                                <!-- Data pesanan akan diisi oleh JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Karyawan View -->
+                <div id="karyawan-view" class="hidden">
                     <div class="mb-6">
                         <div class="flex justify-between items-center">
-                            <h2 class="text-2xl font-bold text-gray-800">Manajemen Transaksi</h2>
-                            <button onclick="openModal('add-transaction-modal')" class="btn-primary px-4 py-2 rounded-lg">
+                            <h2 class="text-xl font-semibold text-gray-800">Manajemen Karyawan & Payroll</h2>
+                            <button onclick="openModal('karyawan-modal')" class="bg-green-500 text-white px-4 py-2 rounded-lg shadow hover:bg-green-600 transition-colors">
+                                <i class="fas fa-user-plus mr-2"></i>Tambah Karyawan
+                            </button>
+                        </div>
+                        <p class="text-gray-500 mt-1">Kelola data karyawan dan sistem penggajian.</p>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                        <table class="w-full text-left">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="p-4">Nama Karyawan</th>
+                                    <th class="p-4">Posisi</th>
+                                    <th class="p-4">Gaji per Hari</th>
+                                    <th class="p-4">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="karyawan-table-body">
+                                <!-- Data karyawan akan diisi oleh JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Keuangan View (hanya untuk Owner) -->
+                <div id="keuangan-view" class="hidden">
+                    <div class="mb-6">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-xl font-semibold text-gray-800">Manajemen Keuangan</h2>
+                            <button onclick="openModal('keuangan-modal')" class="bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600 transition-colors">
                                 <i class="fas fa-plus mr-2"></i>Tambah Transaksi
                             </button>
                         </div>
                         <p class="text-gray-500 mt-1">Kelola semua transaksi keuangan perusahaan.</p>
                     </div>
 
+                    <!-- Filter -->
                     <div class="bg-white p-6 rounded-xl shadow-md mb-6">
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                             <div>
-                                <label for="filter-month" class="block text-sm font-medium text-gray-700 mb-1">Bulan</label>
-                                <select id="filter-month" class="w-full p-2 border border-gray-300 rounded-lg">
-                                    <option value="">Semua Bulan</option>
+                                <label for="finance-filter-month" class="block text-sm font-medium text-gray-700 mb-1">Bulan</label>
+                                <select id="finance-filter-month" class="w-full p-2 border border-gray-300 rounded-lg" onchange="renderKeuanganTable()">
+                                    <option value="semua">Semua Bulan</option>
                                     <option value="01">Januari</option>
                                     <option value="02">Februari</option>
                                     <option value="03">Maret</option>
@@ -624,448 +485,1427 @@
                                 </select>
                             </div>
                             <div>
-                                <label for="filter-year" class="block text-sm font-medium text-gray-700 mb-1">Tahun</label>
-                                <select id="filter-year" class="w-full p-2 border border-gray-300 rounded-lg">
-                                    <option value="">Semua Tahun</option>
-                                    <option value="2023">2023</option>
-                                    <option value="2024">2024</option>
+                                <label for="finance-filter-year" class="block text-sm font-medium text-gray-700 mb-1">Tahun</label>
+                                <select id="finance-filter-year" class="w-full p-2 border border-gray-300 rounded-lg" onchange="renderKeuanganTable()">
+                                    <option value="semua">Semua Tahun</option>
                                 </select>
                             </div>
                             <div>
-                                <label for="filter-type" class="block text-sm font-medium text-gray-700 mb-1">Jenis</label>
-                                <select id="filter-type" class="w-full p-2 border border-gray-300 rounded-lg">
-                                    <option value="">Semua Jenis</option>
-                                    <option value="income">Pemasukan</option>
-                                    <option value="expense">Pengeluaran</option>
+                                <label for="finance-filter-type" class="block text-sm font-medium text-gray-700 mb-1">Jenis</label>
+                                <select id="finance-filter-type" class="w-full p-2 border border-gray-300 rounded-lg" onchange="renderKeuanganTable()">
+                                    <option value="semua">Semua Jenis</option>
+                                    <option value="Pemasukan">Pemasukan</option>
+                                    <option value="Pengeluaran Operasional">Pengeluaran Operasional</option>
+                                    <option value="Modal">Modal</option>
                                 </select>
                             </div>
                             <div>
-                                <label for="filter-category" class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
-                                <select id="filter-category" class="w-full p-2 border border-gray-300 rounded-lg">
-                                    <option value="">Semua Kategori</option>
-                                    <option value="HPP">HPP</option>
-                                    <option value="Listrik">Listrik</option>
-                                    <option value="Wifi">Wifi</option>
-                                    <option value="Gaji">Gaji Karyawan</option>
-                                    <option value="Kertas">Beli Kertas</option>
-                                    <option value="Lainnya">Lainnya</option>
+                                <label for="finance-filter-category" class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
+                                <select id="finance-filter-category" class="w-full p-2 border border-gray-300 rounded-lg" onchange="renderKeuanganTable()">
+                                    <option value="semua">Semua Kategori</option>
                                 </select>
                             </div>
                         </div>
                     </div>
 
                     <div class="bg-white rounded-xl shadow-md overflow-hidden">
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="p-4">Tanggal</th>
-                                        <th class="p-4">Jenis</th>
-                                        <th class="p-4">Kategori</th>
-                                        <th class="p-4">Keterangan</th>
-                                        <th class="p-4">Nominal</th>
-                                        <th class="p-4">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="transactions-table-body">
-                                    <tr>
-                                        <td class="p-4">15/09/2023</td>
-                                        <td class="p-4"><span class="type-badge type-income">Pemasukan</span></td>
-                                        <td class="p-4">Laba dari Order</td>
-                                        <td class="p-4">Pembayaran dari Customer A</td>
-                                        <td class="p-4">Rp 450.000</td>
-                                        <td class="p-4">
-                                            <button class="text-blue-500 hover:text-blue-700 mr-2">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="text-red-500 hover:text-red-700">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="p-4">15/09/2023</td>
-                                        <td class="p-4"><span class="type-badge type-expense">Pengeluaran</span></td>
-                                        <td class="p-4">Listrik</td>
-                                        <td class="p-4">Pembayaran listrik bulan September</td>
-                                        <td class="p-4">Rp 320.000</td>
-                                        <td class="p-4">
-                                            <button class="text-blue-500 hover:text-blue-700 mr-2">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="text-red-500 hover:text-red-700">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="p-4">14/09/2023</td>
-                                        <td class="p-4"><span class="type-badge type-expense">Pengeluaran</span></td>
-                                        <td class="p-4">Kertas</td>
-                                        <td class="p-4">Beli kertas A4 5 rim</td>
-                                        <td class="p-4">Rp 250.000</td>
-                                        <td class="p-4">
-                                            <button class="text-blue-500 hover:text-blue-700 mr-2">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="text-red-500 hover:text-red-700">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="p-4">13/09/2023</td>
-                                        <td class="p-4"><span class="type-badge type-income">Pemasukan</span></td>
-                                        <td class="p-4">Laba dari Order</td>
-                                        <td class="p-4">Pembayaran dari Customer B</td>
-                                        <td class="p-4">Rp 680.000</td>
-                                        <td class="p-4">
-                                            <button class="text-blue-500 hover:text-blue-700 mr-2">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="text-red-500 hover:text-red-700">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <table class="w-full text-left">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="p-4">Tanggal</th>
+                                    <th class="p-4">Jenis</th>
+                                    <th class="p-4">Kategori</th>
+                                    <th class="p-4">Sub Kategori</th>
+                                    <th class="p-4">Nominal</th>
+                                    <th class="p-4">Catatan</th>
+                                    <th class="p-4">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="keuangan-table-body">
+                                <!-- Data keuangan akan diisi oleh JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Laporan View (hanya untuk Owner) -->
+                <div id="laporan-view" class="hidden">
+                    <div class="mb-6">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-xl font-semibold text-gray-800">Laporan</h2>
+                            <div class="flex items-center gap-4">
+                                <button onclick="exportLaporan('csv')" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg shadow hover:bg-gray-300 transition-colors">
+                                    <i class="fas fa-file-csv mr-2"></i>Export CSV
+                                </button>
+                                <button onclick="exportLaporan('excel')" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg shadow hover:bg-gray-300 transition-colors">
+                                    <i class="fas fa-file-excel mr-2"></i>Export Excel
+                                </button>
+                            </div>
+                        </div>
+                        <p class="text-gray-500 mt-1">Lihat dan ekspor laporan keuangan dan bisnis.</p>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-md mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div>
+                                <label for="report-filter-month" class="block text-sm font-medium text-gray-700 mb-1">Bulan</label>
+                                <select id="report-filter-month" class="w-full p-2 border border-gray-300 rounded-lg" onchange="renderLaporan()">
+                                    <option value="semua">Semua Bulan</option>
+                                    <option value="01">Januari</option>
+                                    <option value="02">Februari</option>
+                                    <option value="03">Maret</option>
+                                    <option value="04">April</option>
+                                    <option value="05">Mei</option>
+                                    <option value="06">Juni</option>
+                                    <option value="07">Juli</option>
+                                    <option value="08">Agustus</option>
+                                    <option value="09">September</option>
+                                    <option value="10">Oktober</option>
+                                    <option value="11">November</option>
+                                    <option value="12">Desember</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="report-filter-year" class="block text-sm font-medium text-gray-700 mb-1">Tahun</label>
+                                <select id="report-filter-year" class="w-full p-2 border border-gray-300 rounded-lg" onchange="renderLaporan()">
+                                    <option value="semua">Semua Tahun</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="report-filter-type" class="block text-sm font-medium text-gray-700 mb-1">Jenis Transaksi</label>
+                                <select id="report-filter-type" class="w-full p-2 border border-gray-300 rounded-lg" onchange="renderLaporan()">
+                                    <option value="semua">Semua Jenis</option>
+                                    <option value="Pemasukan">Pemasukan</option>
+                                    <option value="Pengeluaran Operasional">Pengeluaran Operasional</option>
+                                    <option value="Modal">Modal</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="report-filter-category" class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
+                                <select id="report-filter-category" class="w-full p-2 border border-gray-300 rounded-lg" onchange="renderLaporan()">
+                                    <option value="semua">Semua Kategori</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="card bg-white p-6 rounded-xl">
+                            <h3 class="text-xl font-semibold mb-4">Ringkasan Laporan</h3>
+                            <div class="space-y-4 text-lg">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">Total Penjualan:</span>
+                                    <span class="font-bold text-green-600" id="laporan-total-penjualan">Rp 0</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">Total HPP:</span>
+                                    <span class="font-bold text-red-600" id="laporan-total-hpp">Rp 0</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">Total Pemasukan Lain:</span>
+                                    <span class="font-bold text-green-600" id="laporan-total-pemasukan-lain">Rp 0</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">Total Pengeluaran Lain:</span>
+                                    <span class="font-bold text-red-600" id="laporan-total-pengeluaran-lain">Rp 0</span>
+                                </div>
+                                <div class="flex justify-between items-center font-bold text-xl border-t-2 pt-4 mt-4">
+                                    <span>Laba/Rugi Bersih:</span>
+                                    <span id="laporan-laba-bersih" class="text-green-600">Rp 0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card bg-white p-6 rounded-xl">
+                            <h3 class="text-xl font-semibold mb-4">Detail Transaksi</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="p-4">Tanggal</th>
+                                            <th class="p-4">Jenis</th>
+                                            <th class="p-4">Kategori</th>
+                                            <th class="p-4">Nominal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="laporan-table-body">
+                                        <!-- Data laporan akan diisi oleh JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Other Views (Orders, Finance, Reports) -->
-                <div id="orders-view" class="hidden">
-                    <div class="mb-6">
-                        <h2 class="text-2xl font-bold text-gray-800">Manajemen Pesanan</h2>
-                        <p class="text-gray-500 mt-1">Kelola semua pesanan dan transaksi pelanggan.</p>
-                    </div>
-                    <!-- Content for orders view -->
-                </div>
-
-                <div id="finance-view" class="hidden">
-                    <div class="mb-6">
-                        <h2 class="text-2xl font-bold text-gray-800">Laporan Keuangan</h2>
-                        <p class="text-gray-500 mt-1">Lihat dan analisis laporan keuangan perusahaan.</p>
-                    </div>
-                    <!-- Content for finance view -->
-                </div>
-
-                <div id="reports-view" class="hidden">
-                    <div class="mb-6">
-                        <h2 class="text-2xl font-bold text-gray-800">Laporan dan Analisis</h2>
-                        <p class="text-gray-500 mt-1">Generate laporan dan analisis keuangan.</p>
-                    </div>
-                    <!-- Content for reports view -->
-                </div>
             </main>
         </div>
     </div>
 
-    <!-- Add Transaction Modal -->
-    <div id="add-transaction-modal" class="modal">
+    <!-- Modal Pesanan -->
+    <div id="pesanan-modal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('add-transaction-modal')">&times;</span>
-            <h2 class="text-2xl font-bold mb-4">Tambah Transaksi</h2>
-            <form id="add-transaction-form">
-                <div class="form-group">
-                    <label for="transaction-date">Tanggal</label>
-                    <input type="date" id="transaction-date" class="form-control" required>
+            <h3 class="text-2xl font-bold text-gray-800 mb-4">Tambah Pesanan</h3>
+            <form id="pesanan-form" onsubmit="submitPesanan(event)">
+                <div class="mb-4">
+                    <label for="pelanggan" class="block text-gray-700 font-medium mb-2">Nama Pelanggan</label>
+                    <input type="text" id="pelanggan" class="w-full p-3 border border-gray-300 rounded-lg" required>
                 </div>
-                <div class="form-group">
-                    <label for="transaction-type">Jenis Transaksi</label>
-                    <select id="transaction-type" class="form-control" required>
-                        <option value="">Pilih Jenis</option>
-                        <option value="income">Pemasukan</option>
-                        <option value="expense">Pengeluaran</option>
-                    </select>
+                <div class="mb-4">
+                    <label for="no-hp" class="block text-gray-700 font-medium mb-2">Nomor HP</label>
+                    <input type="tel" id="no-hp" class="w-full p-3 border border-gray-300 rounded-lg">
                 </div>
-                <div class="form-group">
-                    <label for="transaction-category">Kategori</label>
-                    <select id="transaction-category" class="form-control" required>
-                        <option value="">Pilih Kategori</option>
-                        <option value="HPP">HPP</option>
-                        <option value="Listrik">Listrik</option>
-                        <option value="Wifi">Wifi</option>
-                        <option value="Gaji">Gaji Karyawan</option>
-                        <option value="Kertas">Beli Kertas</option>
-                        <option value="Lainnya">Lainnya</option>
-                    </select>
+                <div class="mb-4">
+                    <label for="invoice-note" class="block text-gray-700 font-medium mb-2">Catatan Invoice</label>
+                    <textarea id="invoice-note" rows="3" class="w-full p-3 border border-gray-300 rounded-lg"></textarea>
                 </div>
-                <div class="form-group">
-                    <label for="transaction-amount">Nominal (Rp)</label>
-                    <input type="number" id="transaction-amount" class="form-control" min="0" required>
+                <div id="produk-list" class="space-y-4 mb-4">
+                    <div class="produk-item border border-gray-200 rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-semibold text-gray-700">Produk 1</h4>
+                            <button type="button" onclick="removeProduk(this)" class="text-red-500 hover:text-red-700"><i class="fas fa-times-circle"></i></button>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Nama Produk</label>
+                                <input type="text" class="w-full p-2 border border-gray-300 rounded-lg nama-produk" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Kuantitas</label>
+                                <input type="number" class="w-full p-2 border border-gray-300 rounded-lg kuantitas" min="1" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Harga Jual</label>
+                                <input type="number" class="w-full p-2 border border-gray-300 rounded-lg harga-jual" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Harga Pokok (HPP)</label>
+                                <input type="number" class="w-full p-2 border border-gray-300 rounded-lg harga-pokok" required>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="transaction-description">Keterangan</label>
-                    <textarea id="transaction-description" class="form-control" rows="3" required></textarea>
-                </div>
-                <div class="flex justify-end mt-6">
-                    <button type="button" onclick="closeModal('add-transaction-modal')" class="btn-danger mr-2">Batal</button>
-                    <button type="submit" class="btn-success">Simpan Transaksi</button>
+                <button type="button" onclick="addProduk()" class="w-full bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 transition-colors mb-4">Tambah Produk</button>
+
+                <div class="flex justify-end space-x-4">
+                    <button type="button" onclick="closeModal('pesanan-modal')" class="bg-gray-300 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-400 transition-colors">Batal</button>
+                    <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors">Simpan Pesanan</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Modal Karyawan -->
+    <div id="karyawan-modal" class="modal">
+        <div class="modal-content">
+            <h3 class="text-2xl font-bold text-gray-800 mb-4">Tambah Karyawan</h3>
+            <form id="karyawan-form" onsubmit="submitKaryawan(event)">
+                <input type="hidden" id="karyawan-id">
+                <div class="mb-4">
+                    <label for="nama-karyawan" class="block text-gray-700 font-medium mb-2">Nama Lengkap</label>
+                    <input type="text" id="nama-karyawan" class="w-full p-3 border border-gray-300 rounded-lg" required>
+                </div>
+                <div class="mb-4">
+                    <label for="posisi-karyawan" class="block text-gray-700 font-medium mb-2">Posisi</label>
+                    <input type="text" id="posisi-karyawan" class="w-full p-3 border border-gray-300 rounded-lg" required>
+                </div>
+                <div class="mb-4">
+                    <label for="gaji-karyawan" class="block text-gray-700 font-medium mb-2">Gaji per Hari</label>
+                    <input type="number" id="gaji-karyawan" class="w-full p-3 border border-gray-300 rounded-lg" min="0" required>
+                </div>
+                <div class="flex justify-end space-x-4">
+                    <button type="button" onclick="closeModal('karyawan-modal')" class="bg-gray-300 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-400 transition-colors">Batal</button>
+                    <button type="submit" class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors">Simpan Karyawan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Keuangan -->
+    <div id="keuangan-modal" class="modal">
+        <div class="modal-content">
+            <h3 class="text-2xl font-bold text-gray-800 mb-4">Tambah Transaksi Keuangan</h3>
+            <form id="keuangan-form" onsubmit="submitKeuangan(event)">
+                <div class="mb-4">
+                    <label for="tanggal-keuangan" class="block text-gray-700 font-medium mb-2">Tanggal</label>
+                    <input type="date" id="tanggal-keuangan" class="w-full p-3 border border-gray-300 rounded-lg" required>
+                </div>
+                <div class="mb-4">
+                    <label for="jenis-transaksi" class="block text-gray-700 font-medium mb-2">Jenis Transaksi</label>
+                    <select id="jenis-transaksi" class="w-full p-3 border border-gray-300 rounded-lg" onchange="updateKeuanganForm()" required>
+                        <option value="">Pilih Jenis</option>
+                        <option value="Pemasukan">Pemasukan</option>
+                        <option value="Pengeluaran Operasional">Pengeluaran Operasional</option>
+                        <option value="Modal">Modal</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="kategori-keuangan" class="block text-gray-700 font-medium mb-2">Kategori</label>
+                    <select id="kategori-keuangan" class="w-full p-3 border border-gray-300 rounded-lg" required></select>
+                </div>
+                <div class="mb-4 hidden" id="subkategori-group">
+                    <label for="subkategori-keuangan" class="block text-gray-700 font-medium mb-2">Sub Kategori</label>
+                    <input type="text" id="subkategori-keuangan" class="w-full p-3 border border-gray-300 rounded-lg">
+                </div>
+                <div class="mb-4">
+                    <label for="nominal-keuangan" class="block text-gray-700 font-medium mb-2">Nominal</label>
+                    <input type="number" id="nominal-keuangan" class="w-full p-3 border border-gray-300 rounded-lg" required min="0">
+                </div>
+                <div class="mb-4">
+                    <label for="catatan-keuangan" class="block text-gray-700 font-medium mb-2">Catatan</label>
+                    <textarea id="catatan-keuangan" rows="3" class="w-full p-3 border border-gray-300 rounded-lg"></textarea>
+                </div>
+                <div class="flex justify-end space-x-4">
+                    <button type="button" onclick="closeModal('keuangan-modal')" class="bg-gray-300 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-400 transition-colors">Batal</button>
+                    <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors">Simpan Transaksi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal konfirmasi -->
+    <div id="confirm-modal" class="modal">
+        <div class="modal-content">
+            <h3 class="text-xl font-semibold mb-4 text-red-600">Konfirmasi Hapus</h3>
+            <p id="confirm-message" class="mb-6">Anda yakin ingin menghapus data ini?</p>
+            <div class="flex justify-end gap-4">
+                <button id="cancel-delete-btn" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400">Batal</button>
+                <button id="confirm-delete-btn" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">Hapus</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Notifikasi -->
+    <div id="notification-modal" class="modal">
+        <div class="modal-content max-w-sm text-center">
+            <h3 id="notification-title" class="text-xl font-semibold mb-2"></h3>
+            <p id="notification-message" class="text-gray-600 mb-4"></p>
+            <button onclick="closeModal('notification-modal')" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">OK</button>
+        </div>
+    </div>
+    
+    <!-- Template untuk Invoice PDF -->
+    <div id="invoice-template" class="invoice-print-container">
+        <div class="flex flex-col items-center mb-8">
+            <img src="https://placehold.co/80x80/4361ee/ffffff?text=R" alt="Rafaela Print Logo" class="w-20 h-20 mb-2">
+            <h1 class="text-3xl font-bold text-gray-800">RAFAELA PRINT</h1>
+            <p class="text-sm text-gray-600">Jl. Kaumandowo X Genuk, Semarang</p>
+            <p class="text-sm text-gray-600">Telp: 0897-9012-852</p>
+            <p class="text-sm text-gray-600">IG: @rafaelaprint | FB: Rafaela Print</p>
+        </div>
+        <hr class="border-gray-300 my-4">
+        <div class="grid grid-cols-2 gap-4 text-sm mb-4">
+            <div>
+                <p class="font-semibold">NO. INVOICE</p>
+                <p id="invoice-no" class="font-normal"></p>
+            </div>
+            <div class="text-right">
+                <p class="font-semibold">TANGGAL & WAKTU</p>
+                <p id="invoice-date" class="font-normal"></p>
+            </div>
+            <div>
+                <p class="font-semibold">NAMA PELANGGAN</p>
+                <p id="invoice-customer-name" class="font-normal"></p>
+            </div>
+            <div class="text-right">
+                <p class="font-semibold">NOMOR HP</p>
+                <p id="invoice-customer-phone" class="font-normal"></p>
+            </div>
+        </div>
+        <table class="w-full text-sm mb-4">
+            <thead>
+                <tr class="bg-gray-100">
+                    <th class="text-left py-2 px-4">Deskripsi Produk</th>
+                    <th class="text-right py-2 px-4 w-1/4">Jumlah</th>
+                </tr>
+            </thead>
+            <tbody id="invoice-products">
+                <!-- Data produk akan diisi oleh JavaScript -->
+            </tbody>
+        </table>
+        <div class="flex justify-end mb-4">
+            <div class="w-1/2">
+                <div class="flex justify-between font-bold text-lg mb-2">
+                    <span>TOTAL</span>
+                    <span id="invoice-total">Rp 0</span>
+                </div>
+            </div>
+        </div>
+        <div class="p-4 rounded-lg bg-gray-100 mb-4">
+            <p class="font-semibold mb-2">Catatan Invoice:</p>
+            <p id="invoice-note-display" class="text-gray-600"></p>
+        </div>
+        <div class="text-center mb-4">
+            <img src="https://placehold.co/200x200/4361ee/ffffff?text=QRIS+Payment" alt="QRIS Code" class="mx-auto my-2">
+            <p class="text-sm text-gray-600">Scan untuk bayar dengan semua e-wallet/bank.</p>
+        </div>
+        <p class="text-center text-sm text-gray-600 mt-auto">
+            Terima kasih atas kepercayaan Anda. #OneStopPrinting Solution
+        </p>
+        <p class="text-center text-xs text-gray-400">www.rafaelaprint.com</p>
+    </div>
+
     <script>
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyC57gZNXlJoGvTKnTCgCfspMC_qPgkLvtU",
-            authDomain: "rafaela-finance.firebaseapp.com",
-            projectId: "rafaela-finance",
-            storageBucket: "rafaela-finance.firebasestorage.app",
-            messagingSenderId: "45081143872",
-            appId: "1:45081143872:web:91d15b2732c24178ee0da5",
-            measurementId: "G-XM0GEZY4PK"
+        // Global State
+        let db = {
+            pesanan: [],
+            karyawan: [],
+            keuangan: [],
+        };
+        let currentUserRole = 'owner'; // Default role is 'owner'
+        let chart;
+        let deleteCallback = null;
+
+        const FINANCE_CATEGORIES = {
+            'Pemasukan': ['Penjualan', 'Pendapatan Lain-lain', 'Bunga Bank'],
+            'Pengeluaran Operasional': ['Gaji Karyawan', 'Listrik', 'Air', 'Internet', 'Bahan Baku', 'Alat Produksi', 'Sewa', 'Lain-lain'],
+            'Modal': ['Setoran Modal']
         };
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-
-        // DOM Elements
-        const loginScreen = document.getElementById('login-screen');
-        const appContainer = document.getElementById('app-container');
-        const loginForm = document.getElementById('login-form');
-        const logoutBtn = document.getElementById('logout-btn');
-        const userName = document.getElementById('user-name');
-        const userRole = document.getElementById('user-role');
-        const userAvatar = document.getElementById('user-avatar');
-        const userAvatarMobile = document.getElementById('user-avatar-mobile');
-        const pageTitle = document.getElementById('page-title');
-
-        // View management
-        function showView(viewName) {
-            // Hide all views
-            document.querySelectorAll('main > div').forEach(view => {
-                view.classList.add('hidden');
-            });
-            
-            // Show selected view
-            document.getElementById(`${viewName}-view`).classList.remove('hidden');
-            
-            // Update page title
-            pageTitle.textContent = viewName.charAt(0).toUpperCase() + viewName.slice(1);
-            
-            // Update active nav item
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            document.querySelector(`.nav-item[onclick="showView('${viewName}')"]`).classList.add('active');
+        const EMPLOYEE_ROLES = ['Karyawan', 'Owner']; // For future use
+        
+        // --- Core Functions ---
+        
+        // Save and Load Data from localStorage
+        function saveData() {
+            localStorage.setItem('rafaelaDb', JSON.stringify(db));
         }
 
-        // Modal management
-        function openModal(modalId) {
-            document.getElementById(modalId).style.display = 'block';
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-
-        // Login function
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            auth.signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    // Signed in
-                    const user = userCredential.user;
-                    
-                    // Get user data from Firestore
-                    db.collection('users').doc(user.uid).get()
-                        .then((doc) => {
-                            if (doc.exists) {
-                                const userData = doc.data();
-                                userName.textContent = userData.name;
-                                userRole.textContent = userData.role;
-                                userAvatar.textContent = userData.name.charAt(0).toUpperCase();
-                                userAvatarMobile.textContent = userData.name.charAt(0).toUpperCase();
-                                
-                                // Show app container and hide login screen
-                                loginScreen.classList.add('hidden');
-                                appContainer.classList.remove('hidden');
-                                
-                                // Initialize dashboard
-                                initDashboard();
-                            }
-                        })
-                        .catch((error) => {
-                            console.error("Error getting user document:", error);
-                            alert("Terjadi kesalahan saat mengambil data pengguna");
-                        });
-                })
-                .catch((error) => {
-                    alert("Login gagal: " + error.message);
-                });
-        });
-
-        // Logout function
-        logoutBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            auth.signOut()
-                .then(() => {
-                    // Sign-out successful
-                    appContainer.classList.add('hidden');
-                    loginScreen.classList.remove('hidden');
-                    loginForm.reset();
-                })
-                .catch((error) => {
-                    alert("Logout gagal: " + error.message);
-                });
-        });
-
-        // Check auth state
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                // User is signed in
-                db.collection('users').doc(user.uid).get()
-                    .then((doc) => {
-                        if (doc.exists) {
-                            const userData = doc.data();
-                            userName.textContent = userData.name;
-                            userRole.textContent = userData.role;
-                            userAvatar.textContent = userData.name.charAt(0).toUpperCase();
-                            userAvatarMobile.textContent = userData.name.charAt(0).toUpperCase();
-                            
-                            loginScreen.classList.add('hidden');
-                            appContainer.classList.remove('hidden');
-                            
-                            initDashboard();
-                        }
-                    })
-                    .catch((error) => {
-                        console.error("Error getting user document:", error);
-                    });
-            } else {
-                // User is signed out
-                appContainer.classList.add('hidden');
-                loginScreen.classList.remove('hidden');
+        function loadData() {
+            const storedDb = localStorage.getItem('rafaelaDb');
+            if (storedDb) {
+                db = JSON.parse(storedDb);
             }
-        });
+        }
+        
+        // Format Number to Rupiah
+        function formatRupiah(number) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(number);
+        }
 
-        // Initialize dashboard
-        function initDashboard() {
-            // Initialize chart
+        // Show/Hide Views
+        function showView(viewId) {
+            const views = ['dashboard-view', 'pesanan-view', 'karyawan-view', 'keuangan-view', 'laporan-view'];
+            views.forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(viewId).classList.remove('hidden');
+            document.getElementById('page-title').textContent = document.getElementById(viewId).querySelector('h2').textContent;
+            
+            // Re-render data for the active view
+            if (viewId === 'dashboard-view') updateDashboard();
+            if (viewId === 'pesanan-view') renderPesananTable();
+            if (viewId === 'karyawan-view') renderKaryawanTable();
+            if (viewId === 'keuangan-view') renderKeuanganTable();
+            if (viewId === 'laporan-view') renderLaporan();
+        }
+
+        // Toggle Sidebar for Mobile
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebar-overlay').classList.toggle('open');
+        }
+        
+        // Toggle Role for Demo
+        function toggleRole() {
+            currentUserRole = currentUserRole === 'owner' ? 'karyawan' : 'owner';
+            updateUIForRole();
+            showNotification(`Berubah ke peran: ${currentUserRole}`, true);
+        }
+        
+        // Update UI based on User Role
+        function updateUIForRole() {
+            const ownerMenuItems = document.getElementById('owner-menu-items');
+            const toggleRoleBtn = document.getElementById('toggle-role-btn');
+            const userNameDisplay = document.getElementById('user-name-display');
+            const userRoleDisplayHeader = document.getElementById('user-role-display-header');
+            const userRoleDisplaySidebar = document.getElementById('user-role-display');
+            const userAvatar = document.getElementById('user-avatar');
+            
+            if (currentUserRole === 'owner') {
+                ownerMenuItems.classList.remove('hidden');
+                toggleRoleBtn.textContent = 'Owner';
+                toggleRoleBtn.classList.remove('bg-gray-500');
+                toggleRoleBtn.classList.add('bg-blue-500');
+                userNameDisplay.textContent = 'Admin Owner';
+                userRoleDisplayHeader.textContent = 'Owner';
+                userRoleDisplaySidebar.textContent = 'Owner';
+                userAvatar.textContent = 'O';
+            } else {
+                ownerMenuItems.classList.add('hidden');
+                toggleRoleBtn.textContent = 'Karyawan';
+                toggleRoleBtn.classList.remove('bg-blue-500');
+                toggleRoleBtn.classList.add('bg-gray-500');
+                userNameDisplay.textContent = 'Karyawan';
+                userRoleDisplayHeader.textContent = 'Karyawan';
+                userRoleDisplaySidebar.textContent = 'Karyawan';
+                userAvatar.textContent = 'K';
+            }
+            
+            // Re-render active view to apply new role permissions
+            const currentView = document.querySelector('#app-container main > div:not(.hidden)').id;
+            showView(currentView.replace('-view', ''));
+        }
+
+        // --- Data Management Functions ---
+        
+        function updateDashboard() {
+            const filterBulan = document.getElementById('filter-bulan-dashboard').value;
+            
+            const filteredPesanan = db.pesanan.filter(p => {
+                if (filterBulan === 'semua') return true;
+                const tanggalPesanan = new Date(p.tanggal);
+                return String(tanggalPesanan.getMonth() + 1).padStart(2, '0') === filterBulan;
+            });
+
+            let totalPenjualan = 0;
+            let totalHPP = 0;
+            
+            filteredPesanan.forEach(p => {
+                totalPenjualan += p.totalHarga;
+                totalHPP += p.totalHpp;
+            });
+            
+            const labaKotor = totalPenjualan - totalHPP;
+            
+            document.getElementById('total-pesanan').textContent = filteredPesanan.length;
+            document.getElementById('total-penjualan').textContent = formatRupiah(totalPenjualan);
+            document.getElementById('total-hpp').textContent = formatRupiah(totalHPP);
+            document.getElementById('laba-kotor').textContent = formatRupiah(labaKotor);
+            
+            // Financial calculations (Owner only)
+            if (currentUserRole === 'owner') {
+                const filteredKeuangan = db.keuangan.filter(t => {
+                    if (filterBulan === 'semua') return true;
+                    const tanggalTransaksi = new Date(t.tanggal);
+                    return String(tanggalTransaksi.getMonth() + 1).padStart(2, '0') === filterBulan;
+                });
+                
+                let totalPemasukanLain = filteredKeuangan.filter(t => t.jenis === 'Pemasukan').reduce((sum, t) => sum + t.nominal, 0);
+                let totalPengeluaranLain = filteredKeuangan.filter(t => t.jenis === 'Pengeluaran Operasional').reduce((sum, t) => sum + t.nominal, 0);
+                
+                const labaBersih = labaKotor + totalPemasukanLain - totalPengeluaranLain;
+                
+                document.getElementById('total-pemasukan').textContent = formatRupiah(totalPenjualan + totalPemasukanLain);
+                document.getElementById('total-pengeluaran').textContent = formatRupiah(totalHPP + totalPengeluaranLain);
+                document.getElementById('laba-bersih').textContent = formatRupiah(labaBersih);
+                
+                renderLatestOrders(filteredPesanan);
+                renderFinanceChart(filteredKeuangan);
+            }
+        }
+        
+        function renderLatestOrders(pesananList) {
+            const listContainer = document.getElementById('pesanan-terbaru-list');
+            listContainer.innerHTML = '';
+            
+            const latestOrders = pesananList.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal)).slice(0, 5);
+            
+            if (latestOrders.length === 0) {
+                listContainer.innerHTML = '<p class="text-gray-500">Belum ada pesanan.</p>';
+            }
+            
+            latestOrders.forEach(p => {
+                const item = document.createElement('div');
+                item.className = 'flex items-center justify-between p-3 rounded-lg bg-gray-50';
+                item.innerHTML = `
+                    <div>
+                        <p class="font-medium">${p.pelanggan}</p>
+                        <p class="text-sm text-gray-500">${p.invoice}</p>
+                    </div>
+                    <span class="font-semibold text-green-600">${formatRupiah(p.totalHarga)}</span>
+                `;
+                listContainer.appendChild(item);
+            });
+        }
+        
+        function renderFinanceChart(transactions) {
             const ctx = document.getElementById('finance-chart').getContext('2d');
-            const chart = new Chart(ctx, {
+            if (chart) {
+                chart.destroy();
+            }
+
+            const monthlyData = {};
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+
+            // Initialize all months to 0
+            months.forEach(month => {
+                monthlyData[month] = { income: 0, expense: 0 };
+            });
+
+            // Aggregate data
+            transactions.forEach(t => {
+                const date = new Date(t.tanggal);
+                const month = months[date.getMonth()];
+                if (monthlyData[month]) {
+                    if (t.jenis === 'Pemasukan') {
+                        monthlyData[month].income += t.nominal;
+                    } else if (t.jenis === 'Pengeluaran Operasional') {
+                        monthlyData[month].expense += t.nominal;
+                    }
+                }
+            });
+
+            const incomeData = Object.values(monthlyData).map(m => m.income);
+            const expenseData = Object.values(monthlyData).map(m => m.expense);
+
+            chart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep'],
-                    datasets: [
-                        {
-                            label: 'Pemasukan',
-                            data: [9500000, 10200000, 9800000, 11000000, 10500000, 11500000, 12000000, 11800000, 12450000],
-                            backgroundColor: 'rgba(76, 201, 164, 0.5)',
-                            borderColor: '#4cc9a4',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Pengeluaran',
-                            data: [6200000, 5800000, 6500000, 7000000, 6800000, 7200000, 7500000, 7100000, 7320000],
-                            backgroundColor: 'rgba(247, 37, 133, 0.5)',
-                            borderColor: '#f72585',
-                            borderWidth: 1
-                        }
-                    ]
+                    labels: months,
+                    datasets: [{
+                        label: 'Pemasukan',
+                        data: incomeData,
+                        backgroundColor: '#4cc9a4',
+                        borderRadius: 5,
+                    }, {
+                        label: 'Pengeluaran',
+                        data: expenseData,
+                        backgroundColor: '#f72585',
+                        borderRadius: 5,
+                    }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        },
                         y: {
-                            beginAtZero: true,
-                            ticks: {
-                                callback: function(value, index, values) {
-                                    return 'Rp ' + value.toLocaleString('id-ID');
-                                }
-                            }
-                        }
-                    },
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return context.dataset.label + ': Rp ' + context.raw.toLocaleString('id-ID');
-                                }
-                            }
+                            beginAtZero: true
                         }
                     }
                 }
             });
         }
 
-        // Add transaction form handler
-        document.getElementById('add-transaction-form').addEventListener('submit', (e) => {
-            e.preventDefault();
+        function renderPesananTable() {
+            const tableBody = document.getElementById('pesanan-table-body');
+            tableBody.innerHTML = '';
             
-            const date = document.getElementById('transaction-date').value;
-            const type = document.getElementById('transaction-type').value;
-            const category = document.getElementById('transaction-category').value;
-            const amount = document.getElementById('transaction-amount').value;
-            const description = document.getElementById('transaction-description').value;
-            
-            // Here you would save the transaction to Firebase
-            console.log('Saving transaction:', { date, type, category, amount, description });
-            
-            // Close modal and reset form
-            closeModal('add-transaction-modal');
-            e.target.reset();
-            
-            // Show success message
-            alert('Transaksi berhasil disimpan!');
-        });
-
-        // Mobile menu toggle
-        document.getElementById('mobile-menu-btn').addEventListener('click', () => {
-            alert('Menu mobile akan ditampilkan di sini');
-        });
-
-        // PWA Installation
-        let deferredPrompt;
-        const installBtn = document.createElement('button');
-        installBtn.textContent = 'Install App';
-        installBtn.className = 'btn-primary fixed bottom-4 right-4 z-50';
-        installBtn.style.display = 'none';
-        document.body.appendChild(installBtn);
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installBtn.style.display = 'block';
-            
-            installBtn.addEventListener('click', async () => {
-                if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    const { outcome } = await deferredPrompt.userChoice;
-                    if (outcome === 'accepted') {
-                        console.log('User accepted the install prompt');
-                    } else {
-                        console.log('User dismissed the install prompt');
-                    }
-                    deferredPrompt = null;
-                    installBtn.style.display = 'none';
-                }
+            const filterBulan = document.getElementById('filter-bulan-pesanan').value;
+            const filteredPesanan = db.pesanan.filter(p => {
+                if (filterBulan === 'semua') return true;
+                const tanggalPesanan = new Date(p.tanggal);
+                return String(tanggalPesanan.getMonth() + 1).padStart(2, '0') === filterBulan;
             });
-        });
+            
+            if (filteredPesanan.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="6" class="text-center text-gray-500 py-4">Belum ada pesanan.</td></tr>`;
+                return;
+            }
 
-        // Service Worker Registration
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then((registration) => {
-                        console.log('SW registered: ', registration);
-                    })
-                    .catch((registrationError) => {
-                        console.log('SW registration failed: ', registrationError);
-                    });
+            filteredPesanan.forEach(p => {
+                const row = document.createElement('tr');
+                row.className = 'border-b hover:bg-gray-50';
+                
+                const deleteButton = currentUserRole === 'owner' ? `
+                    <button onclick="deletePesanan('${p.id}')" class="text-red-500 hover:text-red-700 ml-2">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                ` : '';
+
+                row.innerHTML = `
+                    <td class="p-4">${p.invoice}</td>
+                    <td class="p-4">${p.pelanggan}</td>
+                    <td class="p-4">${formatRupiah(p.totalHarga)}</td>
+                    <td class="p-4">${formatRupiah(p.totalHpp)}</td>
+                    <td class="p-4">
+                        <span class="type-badge ${p.status === 'Selesai' ? 'bg-green-100 text-green-600' : 'bg-yellow-100 text-yellow-600'}">
+                            ${p.status}
+                        </span>
+                    </td>
+                    <td class="p-4">
+                        <button onclick="generateInvoicePDF('${p.id}')" class="text-blue-500 hover:text-blue-700">
+                            <i class="fas fa-file-invoice"></i>
+                        </button>
+                        ${deleteButton}
+                    </td>
+                `;
+                tableBody.appendChild(row);
             });
         }
+
+        function renderKaryawanTable() {
+            const tableBody = document.getElementById('karyawan-table-body');
+            tableBody.innerHTML = '';
+            
+            if (db.karyawan.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="4" class="text-center text-gray-500 py-4">Belum ada data karyawan.</td></tr>`;
+                return;
+            }
+
+            db.karyawan.forEach(k => {
+                const row = document.createElement('tr');
+                row.className = 'border-b hover:bg-gray-50';
+                row.innerHTML = `
+                    <td class="p-4">${k.nama}</td>
+                    <td class="p-4">${k.posisi}</td>
+                    <td class="p-4">${formatRupiah(k.gaji)}</td>
+                    <td class="p-4">
+                        <button onclick="editKaryawan('${k.id}')" class="text-yellow-500 hover:text-yellow-700 mr-2">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="deleteKaryawan('${k.id}')" class="text-red-500 hover:text-red-700">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+        
+        function renderKeuanganTable() {
+            if (currentUserRole !== 'owner') {
+                return; // Guard clause for Karyawan role
+            }
+            
+            const tableBody = document.getElementById('keuangan-table-body');
+            tableBody.innerHTML = '';
+            
+            const monthFilter = document.getElementById('finance-filter-month').value;
+            const yearFilter = document.getElementById('finance-filter-year').value;
+            const typeFilter = document.getElementById('finance-filter-type').value;
+            const categoryFilter = document.getElementById('finance-filter-category').value;
+            
+            let filteredTransactions = db.keuangan.filter(t => {
+                const date = new Date(t.tanggal);
+                const transactionMonth = String(date.getMonth() + 1).padStart(2, '0');
+                const transactionYear = String(date.getFullYear());
+                
+                return (
+                    (monthFilter === 'semua' || transactionMonth === monthFilter) &&
+                    (yearFilter === 'semua' || transactionYear === yearFilter) &&
+                    (typeFilter === 'semua' || t.jenis === typeFilter) &&
+                    (categoryFilter === 'semua' || t.kategori === categoryFilter)
+                );
+            });
+            
+            // Sort by date descending
+            filteredTransactions.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+
+            if (filteredTransactions.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="7" class="text-center text-gray-500 py-4">Belum ada data transaksi.</td></tr>`;
+                return;
+            }
+
+            filteredTransactions.forEach(t => {
+                const row = document.createElement('tr');
+                row.className = 'border-b hover:bg-gray-50';
+                
+                let nominalClass = 'text-gray-800';
+                let nominalPrefix = '';
+                if (t.jenis === 'Pemasukan' || t.jenis === 'Modal') {
+                    nominalClass = 'text-green-600';
+                    nominalPrefix = '+ ';
+                } else if (t.jenis === 'Pengeluaran Operasional') {
+                    nominalClass = 'text-red-600';
+                    nominalPrefix = '- ';
+                }
+                
+                const deleteButton = `
+                    <button onclick="confirmDelete('keuangan', '${t.id}', '${t.jenis}')" class="text-red-500 hover:text-red-700">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                `;
+
+                row.innerHTML = `
+                    <td class="p-4">${t.tanggal}</td>
+                    <td class="p-4"><span class="type-badge type-${t.jenis.split(' ')[0].toLowerCase()}">${t.jenis}</span></td>
+                    <td class="p-4">${t.kategori}</td>
+                    <td class="p-4">${t.subkategori || '-'}</td>
+                    <td class="p-4 font-bold ${nominalClass}">${nominalPrefix}${formatRupiah(t.nominal)}</td>
+                    <td class="p-4 text-sm text-gray-500">${t.catatan}</td>
+                    <td class="p-4">
+                        <button onclick="editKeuangan('${t.id}')" class="text-yellow-500 hover:text-yellow-700 mr-2">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        ${deleteButton}
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            updateFinanceFilters();
+        }
+        
+        function renderLaporan() {
+             if (currentUserRole !== 'owner') {
+                return; // Guard clause for Karyawan role
+            }
+            
+            const monthFilter = document.getElementById('report-filter-month').value;
+            const yearFilter = document.getElementById('report-filter-year').value;
+            const typeFilter = document.getElementById('report-filter-type').value;
+            const categoryFilter = document.getElementById('report-filter-category').value;
+            
+            // Gabungkan data pesanan dan keuangan
+            let allTransactions = [...db.keuangan];
+            db.pesanan.forEach(p => {
+                allTransactions.push({
+                    id: `p-${p.id}`,
+                    tanggal: p.tanggal,
+                    jenis: 'Pemasukan',
+                    kategori: 'Penjualan',
+                    subkategori: p.invoice,
+                    nominal: p.totalHarga,
+                    catatan: p.catatan,
+                    isFromPesanan: true
+                });
+                // HPP sebagai pengeluaran
+                allTransactions.push({
+                    id: `hpp-${p.id}`,
+                    tanggal: p.tanggal,
+                    jenis: 'Pengeluaran Operasional',
+                    kategori: 'HPP',
+                    subkategori: p.invoice,
+                    nominal: p.totalHpp,
+                    catatan: 'HPP dari pesanan',
+                    isFromPesanan: true
+                });
+            });
+
+            const filteredTransactions = allTransactions.filter(t => {
+                const date = new Date(t.tanggal);
+                const transactionMonth = String(date.getMonth() + 1).padStart(2, '0');
+                const transactionYear = String(date.getFullYear());
+                const category = t.kategori === 'HPP' && t.isFromPesanan ? 'HPP' : t.kategori;
+                
+                return (
+                    (monthFilter === 'semua' || transactionMonth === monthFilter) &&
+                    (yearFilter === 'semua' || transactionYear === yearFilter) &&
+                    (typeFilter === 'semua' || t.jenis === typeFilter) &&
+                    (categoryFilter === 'semua' || category === categoryFilter)
+                );
+            });
+            
+            // Sort by date descending
+            filteredTransactions.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+            
+            // Populate table
+            const tableBody = document.getElementById('laporan-table-body');
+            tableBody.innerHTML = '';
+            
+            if (filteredTransactions.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="4" class="text-center text-gray-500 py-4">Belum ada data laporan.</td></tr>`;
+            } else {
+                filteredTransactions.forEach(t => {
+                    const row = document.createElement('tr');
+                    row.className = 'border-b hover:bg-gray-50';
+                    let nominalClass = 'text-gray-800';
+                    let nominalPrefix = '';
+                    if (t.jenis === 'Pemasukan') {
+                        nominalClass = 'text-green-600';
+                        nominalPrefix = '+ ';
+                    } else if (t.jenis === 'Pengeluaran Operasional') {
+                        nominalClass = 'text-red-600';
+                        nominalPrefix = '- ';
+                    }
+                     // Skip HPP from calculation and only show once
+                    if (t.jenis === 'Pengeluaran Operasional' && t.isFromPesanan) {
+                        return;
+                    }
+                    
+                    row.innerHTML = `
+                        <td class="p-4">${t.tanggal}</td>
+                        <td class="p-4">${t.jenis}</td>
+                        <td class="p-4">${t.kategori}</td>
+                        <td class="p-4 font-bold ${nominalClass}">${nominalPrefix}${formatRupiah(t.nominal)}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+
+            // Recalculate summary
+            let totalPenjualan = 0;
+            let totalHPP = 0;
+            let totalPemasukanLain = 0;
+            let totalPengeluaranLain = 0;
+            
+            filteredTransactions.forEach(t => {
+                if (t.jenis === 'Pemasukan' && t.kategori === 'Penjualan') {
+                    totalPenjualan += t.nominal;
+                } else if (t.jenis === 'Pengeluaran Operasional' && t.kategori === 'HPP') {
+                    totalHPP += t.nominal;
+                } else if (t.jenis === 'Pemasukan' && t.kategori !== 'Penjualan') {
+                    totalPemasukanLain += t.nominal;
+                } else if (t.jenis === 'Pengeluaran Operasional' && t.kategori !== 'HPP') {
+                    totalPengeluaranLain += t.nominal;
+                }
+            });
+            
+            const labaBersih = totalPenjualan - totalHPP + totalPemasukanLain - totalPengeluaranLain;
+            
+            document.getElementById('laporan-total-penjualan').textContent = formatRupiah(totalPenjualan);
+            document.getElementById('laporan-total-hpp').textContent = formatRupiah(totalHPP);
+            document.getElementById('laporan-total-pemasukan-lain').textContent = formatRupiah(totalPemasukanLain);
+            document.getElementById('laporan-total-pengeluaran-lain').textContent = formatRupiah(totalPengeluaranLain);
+            document.getElementById('laporan-laba-bersih').textContent = formatRupiah(labaBersih);
+        }
+        
+        // Populate filter options dynamically
+        function updateFinanceFilters() {
+            const categories = new Set();
+            const years = new Set();
+            
+            db.keuangan.forEach(t => {
+                categories.add(t.kategori);
+                years.add(new Date(t.tanggal).getFullYear());
+            });
+            
+            const categoryFilter = document.getElementById('finance-filter-category');
+            categoryFilter.innerHTML = '<option value="semua">Semua Kategori</option>';
+            categories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                categoryFilter.appendChild(option);
+            });
+            
+            const yearFilter = document.getElementById('finance-filter-year');
+            yearFilter.innerHTML = '<option value="semua">Semua Tahun</option>';
+            years.forEach(year => {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearFilter.appendChild(option);
+            });
+            
+            const reportCategoryFilter = document.getElementById('report-filter-category');
+            reportCategoryFilter.innerHTML = '<option value="semua">Semua Kategori</option>';
+             // Add all categories, including 'Penjualan' and 'HPP' from pesanan data
+            const allReportCategories = new Set([...categories, 'Penjualan', 'HPP']);
+            allReportCategories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                reportCategoryFilter.appendChild(option);
+            });
+
+            const reportYearFilter = document.getElementById('report-filter-year');
+            reportYearFilter.innerHTML = '<option value="semua">Semua Tahun</option>';
+            const allReportYears = new Set([...years, ...db.pesanan.map(p => new Date(p.tanggal).getFullYear())]);
+            allReportYears.forEach(year => {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                reportYearFilter.appendChild(option);
+            });
+        }
+        
+        // Export CSV/Excel
+        function exportLaporan(format) {
+            if (currentUserRole !== 'owner') {
+                showNotification("Akses ditolak. Fitur ini hanya untuk Owner.");
+                return;
+            }
+            
+            const monthFilter = document.getElementById('report-filter-month').value;
+            const yearFilter = document.getElementById('report-filter-year').value;
+            const typeFilter = document.getElementById('report-filter-type').value;
+            const categoryFilter = document.getElementById('report-filter-category').value;
+            
+            let allTransactions = [...db.keuangan];
+            db.pesanan.forEach(p => {
+                allTransactions.push({
+                    tanggal: p.tanggal,
+                    jenis: 'Pemasukan',
+                    kategori: 'Penjualan',
+                    subkategori: p.invoice,
+                    nominal: p.totalHarga,
+                    catatan: p.catatan
+                });
+                allTransactions.push({
+                    tanggal: p.tanggal,
+                    jenis: 'Pengeluaran Operasional',
+                    kategori: 'HPP',
+                    subkategori: p.invoice,
+                    nominal: p.totalHpp,
+                    catatan: 'HPP dari pesanan'
+                });
+            });
+
+            const filteredTransactions = allTransactions.filter(t => {
+                const date = new Date(t.tanggal);
+                const transactionMonth = String(date.getMonth() + 1).padStart(2, '0');
+                const transactionYear = String(date.getFullYear());
+                const category = t.kategori === 'HPP' && t.isFromPesanan ? 'HPP' : t.kategori;
+                
+                return (
+                    (monthFilter === 'semua' || transactionMonth === monthFilter) &&
+                    (yearFilter === 'semua' || transactionYear === yearFilter) &&
+                    (typeFilter === 'semua' || t.jenis === typeFilter) &&
+                    (categoryFilter === 'semua' || category === categoryFilter)
+                );
+            });
+            
+            // Create CSV content
+            let csvContent = "Tanggal,Jenis,Kategori,Sub Kategori,Nominal,Catatan\n";
+            filteredTransactions.forEach(t => {
+                const row = [
+                    t.tanggal,
+                    t.jenis,
+                    t.kategori,
+                    t.subkategori || '',
+                    t.nominal,
+                    `"${t.catatan}"`
+                ].join(',');
+                csvContent += row + "\n";
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            
+            const dateStr = new Date().toISOString().split('T')[0];
+            
+            if (format === 'csv') {
+                link.download = `Laporan_Rafaela_${dateStr}.csv`;
+            } else if (format === 'excel') {
+                link.download = `Laporan_Rafaela_${dateStr}.xls`;
+            }
+            
+            link.click();
+            showNotification(`Laporan berhasil diekspor ke ${format.toUpperCase()}!`);
+        }
+
+        // --- Modal Functions ---
+        
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        // Custom Alert/Notification
+        function showNotification(message, isSuccess = true) {
+            const modal = document.getElementById('notification-modal');
+            const title = document.getElementById('notification-title');
+            const msg = document.getElementById('notification-message');
+            
+            if (isSuccess) {
+                title.textContent = "Berhasil!";
+                title.classList.remove('text-red-600');
+                title.classList.add('text-green-600');
+            } else {
+                title.textContent = "Gagal!";
+                title.classList.remove('text-green-600');
+                title.classList.add('text-red-600');
+            }
+            
+            msg.textContent = message;
+            openModal('notification-modal');
+        }
+        
+        // Confirmation Modal
+        function confirmDelete(type, id, transactionType = '') {
+            let message = "Anda yakin ingin menghapus data ini?";
+            if (type === 'keuangan' && transactionType === 'Pengeluaran Operasional' && currentUserRole !== 'owner') {
+                showNotification("Akses ditolak. Anda tidak bisa menghapus pengeluaran operasional.", false);
+                return;
+            }
+            
+            const modal = document.getElementById('confirm-modal');
+            const confirmBtn = document.getElementById('confirm-delete-btn');
+            const cancelBtn = document.getElementById('cancel-delete-btn');
+            
+            openModal('confirm-modal');
+            
+            confirmBtn.onclick = () => {
+                if (type === 'pesanan') deletePesanan(id);
+                if (type === 'karyawan') deleteKaryawan(id);
+                if (type === 'keuangan') deleteKeuangan(id);
+                closeModal('confirm-modal');
+            };
+            
+            cancelBtn.onclick = () => {
+                closeModal('confirm-modal');
+            };
+        }
+
+        // --- Form Handlers ---
+        
+        function submitPesanan(event) {
+            event.preventDefault();
+            
+            const pelanggan = document.getElementById('pelanggan').value;
+            const noHp = document.getElementById('no-hp').value;
+            const invoiceNote = document.getElementById('invoice-note').value;
+            const produkItems = document.querySelectorAll('.produk-item');
+            
+            let totalHarga = 0;
+            let totalHpp = 0;
+            let produkList = [];
+            
+            produkItems.forEach(item => {
+                const nama = item.querySelector('.nama-produk').value;
+                const kuantitas = parseInt(item.querySelector('.kuantitas').value);
+                const hargaJual = parseFloat(item.querySelector('.harga-jual').value);
+                const hargaPokok = parseFloat(item.querySelector('.harga-pokok').value);
+                
+                if (nama && kuantitas > 0 && hargaJual >= 0 && hargaPokok >= 0) {
+                    totalHarga += kuantitas * hargaJual;
+                    totalHpp += kuantitas * hargaPokok;
+                    produkList.push({ nama, kuantitas, hargaJual, hargaPokok });
+                }
+            });
+            
+            if (produkList.length === 0) {
+                showNotification("Minimal ada satu produk dengan data yang valid.", false);
+                return;
+            }
+
+            const newInvoiceNo = 'INV-' + Math.floor(100000 + Math.random() * 900000);
+            
+            const newPesanan = {
+                id: Date.now().toString(),
+                invoice: newInvoiceNo,
+                tanggal: new Date().toISOString().split('T')[0],
+                pelanggan,
+                noHp,
+                totalHarga,
+                totalHpp,
+                produkList,
+                catatan: invoiceNote,
+                status: 'Selesai'
+            };
+            
+            db.pesanan.push(newPesanan);
+            
+            // Tambahkan transaksi penjualan dan HPP
+            const penjualanTransaction = {
+                id: newPesanan.id,
+                tanggal: newPesanan.tanggal,
+                jenis: 'Pemasukan',
+                kategori: 'Penjualan',
+                subkategori: newPesanan.invoice,
+                nominal: newPesanan.totalHarga,
+                catatan: `Penjualan ${pelanggan}`
+            };
+            
+            const hppTransaction = {
+                id: newPesanan.id + '-hpp',
+                tanggal: newPesanan.tanggal,
+                jenis: 'Pengeluaran Operasional',
+                kategori: 'HPP',
+                subkategori: newPesanan.invoice,
+                nominal: newPesanan.totalHpp,
+                catatan: `HPP untuk penjualan ${pelanggan}`
+            };
+
+            db.keuangan.push(penjualanTransaction, hppTransaction);
+
+            saveData();
+            closeModal('pesanan-modal');
+            document.getElementById('pesanan-form').reset();
+            
+            // Reset produk list except the first one
+            const produkListContainer = document.getElementById('produk-list');
+            while (produkListContainer.children.length > 1) {
+                produkListContainer.removeChild(produkListContainer.lastChild);
+            }
+            
+            showView('pesanan');
+            showNotification(`Pesanan ${newInvoiceNo} berhasil disimpan!`);
+        }
+        
+        function addProduk() {
+            const produkListContainer = document.getElementById('produk-list');
+            const produkCount = produkListContainer.children.length + 1;
+            const newProduk = document.createElement('div');
+            newProduk.className = 'produk-item border border-gray-200 rounded-lg p-4';
+            newProduk.innerHTML = `
+                <div class="flex items-center justify-between mb-2">
+                    <h4 class="font-semibold text-gray-700">Produk ${produkCount}</h4>
+                    <button type="button" onclick="removeProduk(this)" class="text-red-500 hover:text-red-700"><i class="fas fa-times-circle"></i></button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama Produk</label>
+                        <input type="text" class="w-full p-2 border border-gray-300 rounded-lg nama-produk" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Kuantitas</label>
+                        <input type="number" class="w-full p-2 border border-gray-300 rounded-lg kuantitas" min="1" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Harga Jual</label>
+                        <input type="number" class="w-full p-2 border border-gray-300 rounded-lg harga-jual" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Harga Pokok (HPP)</label>
+                        <input type="number" class="w-full p-2 border border-gray-300 rounded-lg harga-pokok" required>
+                    </div>
+                </div>
+            `;
+            produkListContainer.appendChild(newProduk);
+        }
+        
+        function removeProduk(button) {
+            const produkItem = button.closest('.produk-item');
+            produkItem.remove();
+        }
+
+        function deletePesanan(id) {
+            const index = db.pesanan.findIndex(p => p.id === id);
+            if (index !== -1) {
+                db.pesanan.splice(index, 1);
+                // Hapus juga transaksi terkait
+                db.keuangan = db.keuangan.filter(t => t.id !== id && t.id !== `${id}-hpp`);
+                saveData();
+                renderPesananTable();
+                updateDashboard();
+                showNotification("Pesanan berhasil dihapus!");
+            }
+        }
+        
+        function submitKaryawan(event) {
+            event.preventDefault();
+            
+            const id = document.getElementById('karyawan-id').value;
+            const nama = document.getElementById('nama-karyawan').value;
+            const posisi = document.getElementById('posisi-karyawan').value;
+            const gaji = parseInt(document.getElementById('gaji-karyawan').value);
+            
+            if (id) {
+                // Edit
+                const index = db.karyawan.findIndex(k => k.id === id);
+                if (index !== -1) {
+                    db.karyawan[index] = { ...db.karyawan[index], nama, posisi, gaji };
+                    showNotification("Data karyawan berhasil diubah!");
+                }
+            } else {
+                // Add new
+                const newKaryawan = {
+                    id: Date.now().toString(),
+                    nama,
+                    posisi,
+                    gaji,
+                };
+                db.karyawan.push(newKaryawan);
+                showNotification("Karyawan baru berhasil ditambahkan!");
+            }
+            
+            saveData();
+            closeModal('karyawan-modal');
+            document.getElementById('karyawan-form').reset();
+            renderKaryawanTable();
+        }
+        
+        function editKaryawan(id) {
+            const karyawan = db.karyawan.find(k => k.id === id);
+            if (karyawan) {
+                document.getElementById('karyawan-id').value = karyawan.id;
+                document.getElementById('nama-karyawan').value = karyawan.nama;
+                document.getElementById('posisi-karyawan').value = karyawan.posisi;
+                document.getElementById('gaji-karyawan').value = karyawan.gaji;
+                openModal('karyawan-modal');
+            }
+        }
+        
+        function deleteKaryawan(id) {
+            const index = db.karyawan.findIndex(k => k.id === id);
+            if (index !== -1) {
+                db.karyawan.splice(index, 1);
+                saveData();
+                renderKaryawanTable();
+                showNotification("Karyawan berhasil dihapus!");
+            }
+        }
+        
+        function updateKeuanganForm() {
+            const jenis = document.getElementById('jenis-transaksi').value;
+            const kategoriSelect = document.getElementById('kategori-keuangan');
+            const subkategoriGroup = document.getElementById('subkategori-group');
+            kategoriSelect.innerHTML = '';
+            subkategoriGroup.classList.add('hidden');
+            
+            if (jenis in FINANCE_CATEGORIES) {
+                FINANCE_CATEGORIES[jenis].forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat;
+                    option.textContent = cat;
+                    kategoriSelect.appendChild(option);
+                });
+            }
+            
+            // Show subkategori for specific categories
+            if (jenis === 'Pengeluaran Operasional' && kategoriSelect.value === 'Lain-lain') {
+                subkategoriGroup.classList.remove('hidden');
+            }
+        }
+        
+        function submitKeuangan(event) {
+            event.preventDefault();
+            
+            const tanggal = document.getElementById('tanggal-keuangan').value;
+            const jenis = document.getElementById('jenis-transaksi').value;
+            const kategori = document.getElementById('kategori-keuangan').value;
+            const subkategori = document.getElementById('subkategori-keuangan').value;
+            const nominal = parseFloat(document.getElementById('nominal-keuangan').value);
+            const catatan = document.getElementById('catatan-keuangan').value;
+            
+            const newTransaction = {
+                id: Date.now().toString(),
+                tanggal,
+                jenis,
+                kategori,
+                subkategori,
+                nominal,
+                catatan
+            };
+            
+            db.keuangan.push(newTransaction);
+            saveData();
+            closeModal('keuangan-modal');
+            document.getElementById('keuangan-form').reset();
+            showView('keuangan');
+            showNotification("Transaksi berhasil disimpan!");
+        }
+        
+        function deleteKeuangan(id) {
+            const transaction = db.keuangan.find(t => t.id === id);
+            // Karyawan cannot delete operational expenses
+            if (currentUserRole !== 'owner' && transaction.jenis === 'Pengeluaran Operasional') {
+                showNotification("Akses ditolak. Anda tidak bisa menghapus pengeluaran operasional.", false);
+                return;
+            }
+            
+            const index = db.keuangan.findIndex(t => t.id === id);
+            if (index !== -1) {
+                db.keuangan.splice(index, 1);
+                saveData();
+                renderKeuanganTable();
+                showNotification("Transaksi berhasil dihapus!");
+            }
+        }
+
+        // --- PDF Generation ---
+        
+        function generateInvoicePDF(pesananId) {
+            const pesanan = db.pesanan.find(p => p.id === pesananId);
+            if (!pesanan) {
+                alert("Pesanan tidak ditemukan.");
+                return;
+            }
+
+            // Populate invoice template
+            document.getElementById('invoice-no').textContent = pesanan.invoice;
+            document.getElementById('invoice-date').textContent = new Date(pesanan.tanggal).toLocaleDateString('id-ID', {
+                day: '2-digit', month: '2-digit', year: 'numeric'
+            });
+            document.getElementById('invoice-customer-name').textContent = pesanan.pelanggan;
+            document.getElementById('invoice-customer-phone').textContent = pesanan.noHp;
+            document.getElementById('invoice-total').textContent = formatRupiah(pesanan.totalHarga);
+            document.getElementById('invoice-note-display').textContent = pesanan.catatan || '-';
+
+            const produkListContainer = document.getElementById('invoice-products');
+            produkListContainer.innerHTML = '';
+            pesanan.produkList.forEach(produk => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="py-2 px-4">${produk.nama} x ${produk.kuantitas}</td>
+                    <td class="text-right py-2 px-4">${formatRupiah(produk.hargaJual * produk.kuantitas)}</td>
+                `;
+                produkListContainer.appendChild(row);
+            });
+
+            const invoiceTemplate = document.getElementById('invoice-template');
+            invoiceTemplate.style.display = 'block';
+
+            html2pdf(invoiceTemplate, {
+                margin: 1,
+                filename: `${pesanan.invoice}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            }).then(() => {
+                invoiceTemplate.style.display = 'none';
+                showNotification("Invoice berhasil diunduh!");
+            });
+        }
+        
+        // --- Initialization ---
+        
+        function initializeApp() {
+            loadData();
+            updateUIForRole(); // Set initial UI based on default role
+            showView('dashboard');
+            
+            // Populate dashboard months filter
+            const months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+            const filterBulan = document.getElementById('filter-bulan-dashboard');
+            months.forEach((m, i) => {
+                const option = document.createElement('option');
+                option.value = m;
+                option.textContent = new Date(0, i).toLocaleString('id-ID', { month: 'long' });
+                filterBulan.appendChild(option);
+            });
+            
+            // Populate keuangan and laporan year filters
+            const allYears = new Set([...db.pesanan.map(p => new Date(p.tanggal).getFullYear()), ...db.keuangan.map(t => new Date(t.tanggal).getFullYear())]);
+            const sortedYears = [...allYears].sort((a, b) => b - a);
+            const financeYearFilter = document.getElementById('finance-filter-year');
+            const reportYearFilter = document.getElementById('report-filter-year');
+            sortedYears.forEach(year => {
+                const option1 = document.createElement('option');
+                option1.value = year;
+                option1.textContent = year;
+                financeYearFilter.appendChild(option1);
+                
+                const option2 = document.createElement('option');
+                option2.value = year;
+                option2.textContent = year;
+                reportYearFilter.appendChild(option2);
+            });
+
+            // Set up event listener for role toggle button
+            document.getElementById('toggle-role-btn').addEventListener('click', toggleRole);
+            
+            // Hide splash screen
+            setTimeout(() => {
+                document.getElementById('splash-screen').classList.add('hidden');
+                document.getElementById('app-container').classList.remove('hidden');
+            }, 1500); // 1.5 second delay
+        }
+        
+        // Listeners for modal updates
+        document.getElementById('jenis-transaksi').addEventListener('change', () => {
+             const jenis = document.getElementById('jenis-transaksi').value;
+             const kategoriSelect = document.getElementById('kategori-keuangan');
+             kategoriSelect.innerHTML = '';
+             
+             if (jenis in FINANCE_CATEGORIES) {
+                 FINANCE_CATEGORIES[jenis].forEach(cat => {
+                     const option = document.createElement('option');
+                     option.value = cat;
+                     option.textContent = cat;
+                     kategoriSelect.appendChild(option);
+                 });
+             }
+        });
+
+        document.getElementById('kategori-keuangan').addEventListener('change', () => {
+            const kategori = document.getElementById('kategori-keuangan').value;
+            const subkategoriGroup = document.getElementById('subkategori-group');
+            if (kategori === 'Lain-lain') {
+                subkategoriGroup.classList.remove('hidden');
+            } else {
+                subkategoriGroup.classList.add('hidden');
+            }
+        });
+
+
+        // Initial app load
+        window.onload = initializeApp;
     </script>
 </body>
 </html>
