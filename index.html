@@ -1907,5 +1907,42 @@
         // Initial app load
         window.onload = initializeApp;
     </script>
+    <script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").then((reg) => {
+      console.log("SW registered:", reg);
+
+      // ✅ force update setiap reload
+      reg.update();
+
+      // ✅ jika ada versi baru, skip waiting & aktifkan langsung
+      if (reg.waiting) {
+        reg.waiting.postMessage({ type: "SKIP_WAITING" });
+      }
+
+      reg.addEventListener("updatefound", () => {
+        const newSW = reg.installing;
+        if (newSW) {
+          newSW.addEventListener("statechange", () => {
+            if (newSW.state === "installed" && navigator.serviceWorker.controller) {
+              newSW.postMessage({ type: "SKIP_WAITING" });
+              window.location.reload();
+            }
+          });
+        }
+      });
+    }).catch((err) => console.error("SW register failed:", err));
+  });
+
+  // ✅ listen pesan dari SW
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    console.log("New service worker activated, reloading page...");
+    window.location.reload();
+  });
+}
+</script>
+
 </body>
 </html>
+
