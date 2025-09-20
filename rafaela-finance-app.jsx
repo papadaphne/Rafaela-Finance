@@ -4,6 +4,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebas
 import { getAuth, signInWithEmailAndPassword, signInWithCustomToken, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, addDoc, deleteDoc, updateDoc, onSnapshot, collection, query, orderBy, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+// ✅ Perbaikan: pastikan import Firebase pakai URL asli tanpa +esm atau prefix ganda
+
 // Konfigurasi Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyC57gZNXlJoGvTKnTCgCfspMC_qPgkLvtU",
@@ -15,14 +17,10 @@ const firebaseConfig = {
   measurementId: "G-XM0GEZY4PK"
 };
 
-const __app_id = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-const __firebase_config = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : firebaseConfig;
-const __initial_auth_token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
 const logoRafaela = "https://placehold.co/100x100/A3E635/000?text=Rafaela";
 
 // Init Firebase
-const app = initializeApp(__firebase_config);
+const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
@@ -78,11 +76,7 @@ export default function App() {
         setUserRole(uid === ownerUid ? 'owner' : 'karyawan');
       } else {
         try {
-          if (__initial_auth_token) {
-            await signInWithCustomToken(auth, __initial_auth_token);
-          } else {
-            await signInAnonymously(auth);
-          }
+          await signInAnonymously(auth);
         } catch (e) {
           console.error(e);
         }
@@ -94,13 +88,10 @@ export default function App() {
 
   useEffect(() => {
     if (isAuthReady) {
-      const transactionsPath = `/artifacts/${__app_id}/public/data/transactions`;
-      const ordersPath = `/artifacts/${__app_id}/public/data/orders`;
-
-      const unsubscribeTransactions = onSnapshot(query(collection(db, transactionsPath), orderBy('timestamp', 'desc')), (snap) => {
+      const unsubscribeTransactions = onSnapshot(query(collection(db, "transactions"), orderBy('timestamp', 'desc')), (snap) => {
         setTransactions(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
       });
-      const unsubscribeOrders = onSnapshot(query(collection(db, ordersPath), orderBy('timestamp', 'desc')), (snap) => {
+      const unsubscribeOrders = onSnapshot(query(collection(db, "orders"), orderBy('timestamp', 'desc')), (snap) => {
         setOrders(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
       });
 
@@ -110,7 +101,7 @@ export default function App() {
 
   // CRUD
   const addTransaction = async () => {
-    await addDoc(collection(db, `/artifacts/${__app_id}/public/data/transactions`), {
+    await addDoc(collection(db, "transactions"), {
       ...newTransaction,
       amount: parseFloat(newTransaction.amount),
       timestamp: serverTimestamp(),
@@ -119,11 +110,11 @@ export default function App() {
   };
 
   const deleteTransaction = async (id) => {
-    await deleteDoc(doc(db, `/artifacts/${__app_id}/public/data/transactions`, id));
+    await deleteDoc(doc(db, "transactions", id));
   };
 
   const addOrder = async () => {
-    await addDoc(collection(db, `/artifacts/${__app_id}/public/data/orders`), {
+    await addDoc(collection(db, "orders"), {
       ...newOrder,
       amount: parseFloat(newOrder.amount),
       hpp: parseFloat(newOrder.hpp),
@@ -133,15 +124,15 @@ export default function App() {
   };
 
   const deleteOrder = async (id) => {
-    await deleteDoc(doc(db, `/artifacts/${__app_id}/public/data/orders`, id));
+    await deleteDoc(doc(db, "orders", id));
   };
 
   const saveEdit = async () => {
     if (!editData) return;
     if (editType === 'transaction') {
-      await updateDoc(doc(db, `/artifacts/${__app_id}/public/data/transactions`, editData.id), editData);
+      await updateDoc(doc(db, "transactions", editData.id), editData);
     } else if (editType === 'order') {
-      await updateDoc(doc(db, `/artifacts/${__app_id}/public/data/orders`, editData.id), editData);
+      await updateDoc(doc(db, "orders", editData.id), editData);
     }
     setIsEditOpen(false);
     setEditData(null);
