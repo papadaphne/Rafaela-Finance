@@ -42,12 +42,14 @@ export default function App() {
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
       if (user) {
+        console.log("Logged in as UID:", user.uid);
         setUserId(user.uid);
         setUserRole(user.uid === ownerUid ? 'owner' : 'karyawan');
         setIsAuthReady(true);
       } else {
         try {
-          await signInWithEmailAndPassword(auth, ownerEmail, ownerPassword);
+          const cred = await signInWithEmailAndPassword(auth, ownerEmail, ownerPassword);
+          console.log("Signed in with owner account, UID:", cred.user.uid);
         } catch (e) {
           console.error("Login gagal:", e);
         }
@@ -60,58 +62,91 @@ export default function App() {
     if (!isAuthReady) return;
     const unsubTx = onSnapshot(query(collection(db, "transactions"), orderBy('timestamp', 'desc')), (snap) => {
       setTransactions(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-    });
+    }, (err) => console.error("onSnapshot transactions error:", err));
+
     const unsubOrders = onSnapshot(query(collection(db, "orders"), orderBy('timestamp', 'desc')), (snap) => {
       setOrders(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-    });
+    }, (err) => console.error("onSnapshot orders error:", err));
+
     return () => { unsubTx(); unsubOrders(); };
   }, [isAuthReady]);
 
   const addTransaction = async () => {
-    if (!newTransaction.amount) return alert('Jumlah wajib diisi');
-    await addDoc(collection(db, "transactions"), {
-      ...newTransaction,
-      amount: Number(newTransaction.amount),
-      timestamp: serverTimestamp(),
-    });
-    setNewTransaction({ type: 'pemasukan', amount: '', description: '', category: 'lainnya' });
+    try {
+      if (!newTransaction.amount) return alert('Jumlah wajib diisi');
+      console.log("Adding transaction:", newTransaction);
+      await addDoc(collection(db, "transactions"), {
+        ...newTransaction,
+        amount: Number(newTransaction.amount),
+        timestamp: serverTimestamp(),
+      });
+      setNewTransaction({ type: 'pemasukan', amount: '', description: '', category: 'lainnya' });
+    } catch (err) {
+      console.error("addTransaction error:", err);
+      alert("Gagal tambah transaksi: " + err.message);
+    }
   };
 
   const deleteTransaction = async (id) => {
-    if (!confirm('Hapus transaksi ini?')) return;
-    await deleteDoc(doc(db, "transactions", id));
+    try {
+      if (!confirm('Hapus transaksi ini?')) return;
+      console.log("Deleting transaction:", id);
+      await deleteDoc(doc(db, "transactions", id));
+    } catch (err) {
+      console.error("deleteTransaction error:", err);
+      alert("Gagal hapus transaksi: " + err.message);
+    }
   };
 
   const addOrder = async () => {
-    if (!newOrder.name) return alert('Nama wajib diisi');
-    await addDoc(collection(db, "orders"), {
-      ...newOrder,
-      amount: Number(newOrder.amount),
-      hpp: Number(newOrder.hpp),
-      timestamp: serverTimestamp(),
-    });
-    setNewOrder({ name: '', amount: '', hpp: '' });
+    try {
+      if (!newOrder.name) return alert('Nama wajib diisi');
+      console.log("Adding order:", newOrder);
+      await addDoc(collection(db, "orders"), {
+        ...newOrder,
+        amount: Number(newOrder.amount),
+        hpp: Number(newOrder.hpp),
+        timestamp: serverTimestamp(),
+      });
+      setNewOrder({ name: '', amount: '', hpp: '' });
+    } catch (err) {
+      console.error("addOrder error:", err);
+      alert("Gagal tambah pesanan: " + err.message);
+    }
   };
 
   const deleteOrder = async (id) => {
-    if (!confirm('Hapus pesanan ini?')) return;
-    await deleteDoc(doc(db, "orders", id));
+    try {
+      if (!confirm('Hapus pesanan ini?')) return;
+      console.log("Deleting order:", id);
+      await deleteDoc(doc(db, "orders", id));
+    } catch (err) {
+      console.error("deleteOrder error:", err);
+      alert("Gagal hapus pesanan: " + err.message);
+    }
   };
 
   const saveEdit = async () => {
     if (!editData) return;
-    const payload = { ...editData };
-    delete payload.id;
-    if (editType === 'transaction') {
-      payload.amount = Number(payload.amount);
-      await updateDoc(doc(db, "transactions", editData.id), payload);
-    } else if (editType === 'order') {
-      payload.amount = Number(payload.amount);
-      payload.hpp = Number(payload.hpp);
-      await updateDoc(doc(db, "orders", editData.id), payload);
+    try {
+      const payload = { ...editData };
+      delete payload.id;
+      if (editType === 'transaction') {
+        payload.amount = Number(payload.amount);
+        console.log("Updating transaction:", editData.id, payload);
+        await updateDoc(doc(db, "transactions", editData.id), payload);
+      } else if (editType === 'order') {
+        payload.amount = Number(payload.amount);
+        payload.hpp = Number(payload.hpp);
+        console.log("Updating order:", editData.id, payload);
+        await updateDoc(doc(db, "orders", editData.id), payload);
+      }
+      setIsEditOpen(false);
+      setEditData(null);
+    } catch (err) {
+      console.error("saveEdit error:", err);
+      alert("Gagal simpan perubahan: " + err.message);
     }
-    setIsEditOpen(false);
-    setEditData(null);
   };
 
   return (
