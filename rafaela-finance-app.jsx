@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 import { getFirestore, doc, addDoc, deleteDoc, updateDoc, onSnapshot, collection, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
 // Firebase config
@@ -19,6 +19,8 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+const ownerEmail = "arialmedia.official@gmail.com";
+const ownerPassword = "Daniarku19";
 const ownerUid = "GAfTnHxYwgSoZL4YXvpw889B0Hj2";
 
 const formatRupiah = (number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(number || 0);
@@ -42,10 +44,14 @@ export default function App() {
       if (user) {
         setUserId(user.uid);
         setUserRole(user.uid === ownerUid ? 'owner' : 'karyawan');
+        setIsAuthReady(true);
       } else {
-        await signInAnonymously(auth);
+        try {
+          await signInWithEmailAndPassword(auth, ownerEmail, ownerPassword);
+        } catch (e) {
+          console.error("Login gagal:", e);
+        }
       }
-      setIsAuthReady(true);
     });
     return () => unsub();
   }, []);
