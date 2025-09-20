@@ -58,6 +58,16 @@ export default function App() {
     return () => unsub();
   }, []);
 
+  // ✅ Update tampilan sidebar role setiap kali userRole berubah
+  useEffect(() => {
+    if (userRole) {
+      const roleEl = document.getElementById("user-role-display");
+      if (roleEl) {
+        roleEl.textContent = userRole === "owner" ? "Owner" : "Karyawan";
+      }
+    }
+  }, [userRole]);
+
   useEffect(() => {
     if (!isAuthReady) return;
     const unsubTx = onSnapshot(query(collection(db, "transactions"), orderBy('timestamp', 'desc')), (snap) => {
