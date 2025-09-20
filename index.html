@@ -1907,20 +1907,17 @@
         // Initial app load
         window.onload = initializeApp;
     </script>
-    <script>
+<script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("/sw.js").then((reg) => {
       console.log("SW registered:", reg);
-
       // ✅ force update setiap reload
       reg.update();
-
       // ✅ jika ada versi baru, skip waiting & aktifkan langsung
       if (reg.waiting) {
         reg.waiting.postMessage({ type: "SKIP_WAITING" });
       }
-
       reg.addEventListener("updatefound", () => {
         const newSW = reg.installing;
         if (newSW) {
@@ -1934,7 +1931,6 @@ if ("serviceWorker" in navigator) {
       });
     }).catch((err) => console.error("SW register failed:", err));
   });
-
   // ✅ listen pesan dari SW
   navigator.serviceWorker.addEventListener("controllerchange", () => {
     console.log("New service worker activated, reloading page...");
@@ -1945,4 +1941,3 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
-
