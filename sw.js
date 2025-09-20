@@ -1,36 +1,62 @@
+const CACHE_NAME = "rafaela-finance-cache-v1";
+const ASSETS = [
+  "/",
+  "/index.html",
+  "/manifest.webmanifest",
+  "/favicon.ico",
+  "/logo192.png",
+  "/logo512.png"
+];
+
+// Install service worker
 self.addEventListener("install", (event) => {
-  self.skipWaiting();
-  console.log("Service Worker installed");
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(ASSETS);
+    })
+  );
 });
 
+// Activate service worker
 self.addEventListener("activate", (event) => {
-  clients.claim();
-  console.log("Service Worker activated");
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(
+        keys.map((key) => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
+        })
+      )
+    )
+  );
 });
 
+// Fetch handler
 self.addEventListener("fetch", (event) => {
-  const url = event.request.url;
+  const url = new URL(event.request.url);
 
-  // 🚫 Jangan intercept request ke Firebase / Firestore
-  if (url.includes("firestore.googleapis.com") || url.includes("firebase")) {
-    return;
+  // 🚫 Jangan intercept Firestore & Firebase Auth
+  if (
+    url.origin.includes("firestore.googleapis.com") ||
+    url.origin.includes("firebaseauth") ||
+    url.origin.includes("identitytoolkit.googleapis.com")
+  ) {
+    return; // biarkan request langsung ke network
   }
 
-  // ✅ Cache-first strategy untuk asset lokal
+  // ✅ Cache-first strategy untuk file statis
   event.respondWith(
-    caches.open("rafaela-cache").then((cache) =>
-      cache.match(event.request).then((response) => {
-        return (
-          response ||
-          fetch(event.request).then((networkResponse) => {
-            // hanya cache GET request
-            if (event.request.method === "GET" && networkResponse.ok) {
-              cache.put(event.request, networkResponse.clone());
-            }
-            return networkResponse;
-          })
-        );
-      })
-    )
+    caches.match(event.request).then((cachedResponse) => {
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+      return fetch(event.request).then((response) => {
+        return caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, response.clone());
+          return response;
+        });
+      });
+    })
   );
 });
